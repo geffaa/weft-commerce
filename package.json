@@ -1,0 +1,13 @@
+{
+  "name": "weft",
+  "private": true,
+  "packageManager": "pnpm@10.18.3",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "infra:up": "docker compose up -d --wait",
+    "infra:down": "docker compose down",
+    "lint": "pnpm -r --if-present lint",
+    "test": "pnpm -r --if-present test",
+    "typecheck": "pnpm -r --if-present typecheck"
+  }
+}

@@ -1,0 +1,171 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Exceptions · Weft</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@400;500;600;650;700&family=Spline+Sans+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Weft design system v1 — "workshop ledger". Operate mode, dense, quiet; the 24-hour tape is the one remembered element. */
+:root{
+  --bg:#F1F4F3; --surface:#FFFFFF; --surface-2:#F7F9F8; --hover:#EBF0EE;
+  --line:#DCE3E0; --line-strong:#C3CDC9;
+  --ink:#10181B; --ink-2:#2F3B3D; --ink-3:#4F5C5E; --ink-4:#58666A;
+  --pine:#1B6B4A; --pine-strong:#14543A; --pine-soft:#E2F1E9; --pine-line:#B7D9C6;
+  --amber:#865509; --amber-soft:#FBF0D8; --amber-line:#EBCF93;
+  --red:#B1281D; --red-soft:#FCEBE8; --red-line:#F0B8B0;
+  --font:"Albert Sans",system-ui,sans-serif; --mono:"Spline Sans Mono",ui-monospace,monospace;
+  --s1:4px;--s2:8px;--s3:12px;--s4:16px;--s5:20px;--s6:24px;--s7:32px;
+  --r-s:4px;--r:6px;--r-l:10px;
+  --pop:0 12px 32px -12px rgba(16,24,27,.28),0 2px 6px rgba(16,24,27,.08);
+}
+*{box-sizing:border-box;margin:0}
+html,body{background:var(--bg)}
+body{font:14px/1.5 var(--font);color:var(--ink);-webkit-font-smoothing:antialiased}
+a{color:var(--pine-strong);text-decoration:none}a:hover{text-decoration:underline;text-underline-offset:3px}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--pine);outline-offset:2px;border-radius:var(--r-s)}
+h1,h2,h3{font-weight:650;letter-spacing:-.012em}
+.mono{font-family:var(--mono);font-size:12.5px;letter-spacing:0}
+.fig{font-variant-numeric:tabular-nums}
+.muted{color:var(--ink-3)}.small{font-size:13px}
+.icon{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.icon.s{width:14px;height:14px}.icon.l{width:18px;height:18px}
+kbd{font:500 11px var(--mono);border:1px solid var(--line-strong);border-bottom-width:2px;border-radius:4px;padding:0 5px;background:var(--surface);color:var(--ink-3)}
+
+/* shell */
+.app{display:grid;grid-template-columns:232px minmax(0,1fr);grid-template-rows:48px minmax(0,1fr);height:100vh;overflow:hidden}
+.top{grid-column:1/-1;display:flex;align-items:center;gap:var(--s4);padding:0 var(--s4);background:var(--ink);color:#EAF0EE}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:17px;letter-spacing:-.02em;width:216px;color:#fff}
+.env{display:inline-flex;background:#243034;border-radius:var(--r);padding:2px;gap:2px}
+.env button{border:0;background:none;color:#B9C6C3;font-size:12.5px;font-weight:600;padding:4px 12px;border-radius:4px}
+.env button[aria-pressed=true]{background:#fff;color:var(--ink)}
+.env button[aria-pressed=true].live{background:var(--red);color:#fff}
+.top .find{margin-left:auto;display:flex;align-items:center;gap:8px;height:30px;width:300px;padding:0 10px;border-radius:var(--r);background:#243034;color:#B9C6C3;border:0}
+.top .find kbd{margin-left:auto;background:#1B2528;border-color:#3A484C;color:#B9C6C3}
+.me{width:28px;height:28px;border-radius:50%;background:var(--pine-soft);color:var(--pine-strong);display:grid;place-items:center;font-weight:700;font-size:12px}
+.rail{background:var(--surface);border-right:1px solid var(--line);padding:var(--s3) var(--s2);overflow:auto;display:flex;flex-direction:column;gap:2px}
+.rail .grp{font-size:12px;font-weight:600;color:var(--ink-4);padding:14px 10px 4px}
+.rail a{display:flex;align-items:center;gap:10px;padding:6px 10px;border-radius:var(--r);color:var(--ink-2);font-weight:500}
+.rail a:hover{background:var(--hover);text-decoration:none}
+.rail a[aria-current]{background:var(--pine-soft);color:var(--pine-strong);font-weight:650}
+.rail a .n{margin-left:auto;font-size:12px;font-variant-numeric:tabular-nums;color:var(--ink-3)}
+.rail a .n.hot{background:var(--red);color:#fff;border-radius:999px;padding:0 7px;font-weight:700}
+.rail .soon{margin-left:auto;font-size:11.5px;color:var(--ink-4)}
+.main{overflow:auto;min-width:0}
+.page{padding:var(--s5) var(--s6) var(--s7);max-width:1240px}
+.phead{display:flex;align-items:flex-end;gap:var(--s4);margin-bottom:var(--s4)}
+.phead h1{font-size:24px}
+.phead p{color:var(--ink-3);margin-top:2px}
+.phead .acts{margin-left:auto;display:flex;gap:var(--s2)}
+
+/* controls */
+.btn{white-space:nowrap;display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border:1px solid var(--line-strong);border-radius:var(--r);background:var(--surface);font-weight:600;font-size:13px}
+.btn:hover{background:var(--hover)}
+.btn.primary{background:var(--pine);border-color:var(--pine);color:#fff}.btn.primary:hover{background:var(--pine-strong)}
+.btn.sm{height:28px;padding:0 9px;font-size:12.5px}
+.btn.ghost{border-color:transparent;background:none}
+.seg{display:inline-flex;background:var(--hover);border-radius:var(--r);padding:2px;gap:2px}
+.seg button{border:0;background:none;border-radius:4px;padding:4px 11px;font-size:13px;font-weight:600;color:var(--ink-3)}
+.seg button[aria-pressed=true]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(16,24,27,.14)}
+.seg .c{margin-left:6px;font-weight:500;color:var(--ink-4)}
+.trigger{display:inline-flex;align-items:center;gap:8px;height:32px;padding:0 10px 0 12px;border:1px solid var(--line-strong);border-radius:var(--r);background:var(--surface);font-weight:500}
+.trigger .icon:last-child{color:var(--ink-4)}
+.cbx,.swt{display:inline-flex;align-items:center;gap:8px;font-size:13px}
+.cbx .box{width:16px;height:16px;border:1.5px solid var(--line-strong);border-radius:4px;background:var(--surface);display:grid;place-items:center;color:#fff}
+.cbx[aria-checked=true] .box{background:var(--pine);border-color:var(--pine)}
+.swt .track{width:30px;height:18px;border-radius:999px;background:var(--line-strong);position:relative}
+.swt .track::after{content:"";position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:#fff}
+.swt[aria-checked=true] .track{background:var(--pine)}.swt[aria-checked=true] .track::after{left:14px}
+.badge{display:inline-flex;align-items:center;gap:5px;height:20px;padding:0 7px;border-radius:var(--r-s);font-size:12px;font-weight:600;background:var(--hover);color:var(--ink-2);white-space:nowrap}
+.badge.ok{background:var(--pine-soft);color:var(--pine-strong)}.badge.warn{background:var(--amber-soft);color:var(--amber)}.badge.bad{background:var(--red-soft);color:var(--red)}
+.badge i{width:6px;height:6px;border-radius:50%;background:currentColor}
+.ch{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:5px;background:var(--hover);font:700 11px var(--font);color:var(--ink-2)}
+
+/* the tape: last 24 hours of runs, one tick per 30 minutes */
+.tape{display:grid;grid-template-columns:repeat(48,1fr);gap:2px;height:22px;align-items:end}
+.tape i{display:block;background:var(--line);border-radius:1px;height:30%}
+.tape i.ok{background:var(--pine);height:60%}.tape i.warn{background:#C99A3B;height:85%}.tape i.bad{background:var(--red);height:100%}
+.tapewrap{display:grid;gap:6px}
+.tapelabels{display:flex;justify-content:space-between;font-size:12px;color:var(--ink-4)}
+
+/* panels, tables, lists */
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-l)}
+.panel-h{display:flex;align-items:center;gap:var(--s2);padding:12px 16px;border-bottom:1px solid var(--line)}
+.panel-h h2{font-size:15px}
+.panel-b{padding:16px;grid-template-columns:minmax(0,1fr)}.panel-b>*{min-width:0}
+.toolbar{display:flex;align-items:center;gap:var(--s3);margin-bottom:var(--s3);flex-wrap:wrap}
+table.t{width:100%;border-collapse:collapse;font-size:13.5px}
+table.t th{text-align:left;font-weight:600;font-size:12.5px;color:var(--ink-3);padding:8px 12px;border-bottom:1px solid var(--line);background:var(--surface-2);white-space:nowrap}
+table.t td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+table.t tr:last-child td{border-bottom:0}
+table.t .n{text-align:right;font-variant-numeric:tabular-nums}
+table.t tbody tr:hover{background:var(--surface-2)}
+.kv{display:grid;grid-template-columns:110px minmax(0,1fr);gap:8px 12px}.kv dt{color:var(--ink-3)}.kv dd{margin:0}
+.code{font:12.5px/1.5 var(--mono);background:#101A1D;color:#DCE8E4;border-radius:var(--r);padding:12px 14px;overflow:auto;white-space:pre}
+.code .k{color:#8FD0B0}.code .e{color:#FF9D8F}
+.callout{display:flex;gap:10px;padding:10px 12px;border-radius:var(--r);background:var(--amber-soft);border:1px solid var(--amber-line);color:#5C3B05}
+.callout.ok{background:var(--pine-soft);border-color:var(--pine-line);color:var(--pine-strong)}
+.synthetic{font-size:12.5px;color:var(--ink-4);margin-top:var(--s5)}
+@media (max-width:1180px){.app{grid-template-columns:60px minmax(0,1fr)}.rail .grp,.rail a span:not(.n){display:none}.rail a{justify-content:center}.rail a .n{display:none}.brand{width:auto}.top .find{width:160px}}
+@media (max-width:760px){.app{grid-template-columns:minmax(0,1fr)}.rail{display:none}.page{padding:var(--s4)}.phead{flex-wrap:wrap}.top .find{display:none}.env{margin-left:auto}}
+</style></head><body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="i-rotate-cw" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8" />
+  <path d="M21 3v5h-5" /></symbol><symbol id="i-chevron-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" /></symbol><symbol id="i-wrench" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" /></symbol><symbol id="i-copy" viewBox="0 0 24 24"><rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
+  <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" /></symbol><symbol id="i-layout-dashboard" viewBox="0 0 24 24"><rect width="7" height="9" x="3" y="3" rx="1" />
+  <rect width="7" height="5" x="14" y="3" rx="1" />
+  <rect width="7" height="9" x="14" y="12" rx="1" />
+  <rect width="7" height="5" x="3" y="16" rx="1" /></symbol><symbol id="i-receipt" viewBox="0 0 24 24"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z" />
+  <path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8" />
+  <path d="M12 17.5v-11" /></symbol><symbol id="i-package" viewBox="0 0 24 24"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z" />
+  <path d="M12 22V12" />
+  <path d="m3.3 7 7.703 4.734a2 2 0 0 0 1.994 0L20.7 7" />
+  <path d="m7.5 4.27 9 5.15" /></symbol><symbol id="i-shopping-bag" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
+  <path d="M3 6h18" />
+  <path d="M16 10a4 4 0 0 1-8 0" /></symbol><symbol id="i-plug" viewBox="0 0 24 24"><path d="M12 22v-5" />
+  <path d="M9 8V2" />
+  <path d="M15 8V2" />
+  <path d="M18 8v5a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V8Z" /></symbol><symbol id="i-landmark" viewBox="0 0 24 24"><line x1="3" x2="21" y1="22" y2="22" />
+  <line x1="6" x2="6" y1="18" y2="11" />
+  <line x1="10" x2="10" y1="18" y2="11" />
+  <line x1="14" x2="14" y1="18" y2="11" />
+  <line x1="18" x2="18" y1="18" y2="11" />
+  <polygon points="12 2 20 7 4 7" /></symbol><symbol id="i-message-square" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></symbol><symbol id="i-book-open" viewBox="0 0 24 24"><path d="M12 7v14" />
+  <path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z" /></symbol><symbol id="i-flask-conical" viewBox="0 0 24 24"><path d="M10 2v7.527a2 2 0 0 1-.211.896L4.72 20.55a1 1 0 0 0 .9 1.45h12.76a1 1 0 0 0 .9-1.45l-5.069-10.127A2 2 0 0 1 14 9.527V2" />
+  <path d="M8.5 2h7" />
+  <path d="M7 16h10" /></symbol><symbol id="i-activity" viewBox="0 0 24 24"><path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2" /></symbol><symbol id="i-triangle-alert" viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" />
+  <path d="M12 9v4" />
+  <path d="M12 17h.01" /></symbol><symbol id="i-git-compare" viewBox="0 0 24 24"><circle cx="18" cy="18" r="3" />
+  <circle cx="6" cy="6" r="3" />
+  <path d="M13 6h3a2 2 0 0 1 2 2v7" />
+  <path d="M11 18H8a2 2 0 0 1-2-2V9" /></symbol><symbol id="i-settings" viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
+  <circle cx="12" cy="12" r="3" /></symbol></svg>
+<div class="app">
+<header class="top"><a class="brand" href="index.html"><svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><rect width="24" height="24" rx="6" fill="#1B6B4A"/><path d="M3.2 12C5.2 5.2 9.2 5.2 12 12C14.8 18.8 18.8 18.8 20.8 12" fill="none" stroke="#A8DBC0" stroke-width="2.7" stroke-linecap="round"/><path d="M3.2 12C5.2 18.8 9.2 18.8 12 12C14.8 5.2 18.8 5.2 20.8 12" fill="none" stroke="#1B6B4A" stroke-width="4.4" stroke-linecap="butt"/><path d="M3.2 12C5.2 18.8 9.2 18.8 12 12C14.8 5.2 18.8 5.2 20.8 12" fill="none" stroke="#FFFFFF" stroke-width="2.7" stroke-linecap="round"/></svg>Weft</a>
+<div class="env" role="group" aria-label="Environment"><button aria-pressed="true">Sandbox</button><button class="live" aria-pressed="false">Live</button></div>
+<button class="find" aria-label="Search"><svg class="icon s" aria-hidden="true"><use href="#i-search"/></svg><span>Search orders, SKUs, runs</span><kbd>⌘K</kbd></button>
+<span class="me" aria-label="Maya Okafor">MO</span></header>
+<nav class="rail" aria-label="Main"><div class="grp">Overview</div><a href="#"><svg class="icon" aria-hidden="true"><use href="#i-layout-dashboard"/></svg><span>Overview</span></a><div class="grp">Commerce</div><a href="#"><svg class="icon" aria-hidden="true"><use href="#i-receipt"/></svg><span>Orders</span></a><a href="#"><svg class="icon" aria-hidden="true"><use href="#i-package"/></svg><span>Products</span><span class="n">3</span></a><div class="grp">Channels</div><a href="#"><svg class="icon" aria-hidden="true"><use href="#i-shopping-bag"/></svg><span>Shopify</span></a><a href="#"><svg class="icon" aria-hidden="true"><use href="#i-plug"/></svg><span>WooCommerce</span><span class="soon">Soon</span></a><div class="grp">Finance</div><a href="#"><svg class="icon" aria-hidden="true"><use href="#i-landmark"/></svg><span>Xero</span></a><div class="grp">Assistant</div><a href="assistant.html"><svg class="icon" aria-hidden="true"><use href="#i-message-square"/></svg><span>Conversations</span></a><a href="#"><svg class="icon" aria-hidden="true"><use href="#i-book-open"/></svg><span>Knowledge</span></a><a href="#"><svg class="icon" aria-hidden="true"><use href="#i-flask-conical"/></svg><span>Evals</span></a><div class="grp">Operations</div><a href="#"><svg class="icon" aria-hidden="true"><use href="#i-activity"/></svg><span>Runs</span></a><a href="exceptions.html" aria-current="page"><svg class="icon" aria-hidden="true"><use href="#i-triangle-alert"/></svg><span>Exceptions</span><span class="n hot">6</span></a><a href="reconciliation.html"><svg class="icon" aria-hidden="true"><use href="#i-git-compare"/></svg><span>Reconciliation</span><span class="n">3</span></a><div class="grp">Admin</div><a href="#"><svg class="icon" aria-hidden="true"><use href="#i-settings"/></svg><span>Settings</span></a></nav>
+<main class="main"><div class="page">
+<div class="phead"><div><h1>Exceptions</h1><p>Work that failed or needs a person. Everything else is running.</p></div>
+<div class="acts"><button class="btn"><svg class="icon s" aria-hidden="true"><use href="#i-rotate-cw"/></svg>Retry selected</button><button class="btn primary"><svg class="icon s" aria-hidden="true"><use href="#i-rotate-cw"/></svg>Retry all validation errors</button></div></div>
+<div class="panel" style="padding:12px 16px;margin-bottom:var(--s4)"><div class="tapewrap"><div class="tape" role="img" aria-label="Runs in the last 24 hours"><i class="ok"></i><i class="ok"></i><i class="ok"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class="ok"></i><i class="ok"></i><i class="ok"></i><i class="ok"></i><i class="ok"></i><i class="ok"></i><i class="ok"></i><i class="ok"></i><i class="ok"></i><i class="ok"></i><i class="ok"></i><i class="ok"></i><i class="ok"></i><i class="warn"></i><i class="ok"></i><i class="ok"></i><i class="ok"></i><i class="ok"></i><i class="ok"></i><i class="ok"></i><i class="warn"></i><i class="bad"></i><i class="bad"></i><i class="ok"></i><i class="ok"></i><i class="ok"></i><i class="ok"></i><i class="ok"></i><i class="ok"></i><i class="ok"></i><i class="ok"></i><i class="warn"></i><i class="bad"></i><i class="ok"></i><i class="ok"></i><i class="warn"></i><i class="ok"></i><i class="ok"></i><i class="ok"></i></div><div class="tapelabels"><span>24 h ago</span><span>12 h ago</span><span>Now</span></div></div>
+<div class="muted small" style="margin-top:8px">Each tick is 30 minutes. Green: all runs succeeded. Amber: retried and recovered. Red: items failed. Grey: nothing ran (no orders).</div></div>
+<div class="toolbar"><div class="seg" role="group" aria-label="Source"><button aria-pressed="true">All<span class="c">6</span></button><button aria-pressed="false">Xero<span class="c">3</span></button><button aria-pressed="false">Shopify<span class="c">2</span></button><button aria-pressed="false">Stock<span class="c">1</span></button></div>
+<button class="trigger" aria-haspopup="listbox">Open only<svg class="icon s" aria-hidden="true"><use href="#i-chevron-down"/></svg></button><span class="muted small" style="margin-left:auto">Sorted by oldest first within each cause</span></div>
+<div style="display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:var(--s4);align-items:start">
+<div class="panel" style="overflow:hidden"><table class="t"><tbody>
+<tr><td colspan="5" style="background:var(--surface-2);padding:8px 12px;border-bottom:1px solid var(--line);font-weight:650">Xero · rejected by validation <span class="muted" style="font-weight:500">· 3</span><span class="muted small" style="float:right;font-weight:500">Needs a fix in Xero, then retry</span></td></tr><tr style="background:var(--pine-soft);box-shadow:inset 3px 0 0 var(--pine)"><td style="width:36px"><span class="cbx" role="checkbox" aria-checked="false" aria-label="Select WF-10482"><span class="box"></span></span></td><td style="width:34px"><span class="ch">X</span></td><td><b class="mono">WF-10482</b><div class="muted small">£86.40 · attempt 4 of 5</div></td><td>Account code 200 does not exist in this organisation</td><td class="n muted" style="white-space:nowrap">2 h</td></tr><tr><td style="width:36px"><span class="cbx" role="checkbox" aria-checked="false" aria-label="Select WF-10483"><span class="box"></span></span></td><td style="width:34px"><span class="ch">X</span></td><td><b class="mono">WF-10483</b><div class="muted small">£212.00 · attempt 4 of 5</div></td><td>Account code 200 does not exist in this organisation</td><td class="n muted" style="white-space:nowrap">2 h</td></tr><tr><td style="width:36px"><span class="cbx" role="checkbox" aria-checked="false" aria-label="Select SH-7731"><span class="box"></span></span></td><td style="width:34px"><span class="ch">X</span></td><td><b class="mono">SH-7731</b><div class="muted small">$148.75 · attempt 2 of 5</div></td><td>Contact email is not valid: “anna.k@@haldenmoto.co”</td><td class="n muted" style="white-space:nowrap">47 min</td></tr>
+<tr><td colspan="5" style="background:var(--surface-2);padding:8px 12px;border-bottom:1px solid var(--line);font-weight:650">Shopify · rate limited <span class="muted" style="font-weight:500">· 2</span><span class="muted small" style="float:right;font-weight:500">Self-healing</span></td></tr><tr><td style="width:36px"><span class="cbx" role="checkbox" aria-checked="false" aria-label="Select SKU HM-BP-0196"><span class="box"></span></span></td><td style="width:34px"><span class="ch">S</span></td><td><b class="mono">SKU HM-BP-0196</b><div class="muted small">Stock push · attempt 1 of 5</div></td><td>Throttled by Shopify, will retry on its own</td><td class="n muted" style="white-space:nowrap">6 min</td></tr><tr><td style="width:36px"><span class="cbx" role="checkbox" aria-checked="false" aria-label="Select SKU HM-OF-0112"><span class="box"></span></span></td><td style="width:34px"><span class="ch">S</span></td><td><b class="mono">SKU HM-OF-0112</b><div class="muted small">Stock push · attempt 1 of 5</div></td><td>Throttled by Shopify, will retry on its own</td><td class="n muted" style="white-space:nowrap">6 min</td></tr>
+<tr><td colspan="5" style="background:var(--surface-2);padding:8px 12px;border-bottom:1px solid var(--line);font-weight:650">Stock · cannot fulfil <span class="muted" style="font-weight:500">· 1</span><span class="muted small" style="float:right;font-weight:500">Decision needed</span></td></tr><tr><td style="width:36px"><span class="cbx" role="checkbox" aria-checked="false" aria-label="Select SH-7740"><span class="box"></span></span></td><td style="width:34px"><span class="ch">W</span></td><td><b class="mono">SH-7740</b><div class="muted small">Order from Shopify · needs a person</div></td><td>Insufficient stock: 1 unit left, 2 requested across two channels</td><td class="n muted" style="white-space:nowrap">31 min</td></tr>
+</tbody></table></div>
+<aside class="panel" aria-label="Details">
+<div class="panel-h"><b class="mono">WF-10482</b><span class="badge bad"><i></i>Failed</span><span class="muted small" style="margin-left:auto">Run <span class="mono">run_8f21</span></span></div>
+<div class="panel-b" style="display:grid;gap:var(--s4)">
+<div><h2 style="font-size:14px;margin-bottom:6px">What happened</h2><p>Weft tried to create the invoice four times. Xero answered that the sales account code <span class="mono">200</span> is not in this organisation, so every attempt is rejected the same way.</p></div>
+<div class="callout"><svg class="icon" aria-hidden="true"><use href="#i-wrench"/></svg><span><b>Suggested fix:</b> create account 200 in Xero, or choose another sales account in Settings. Then retry the 3 orders with this cause.</span></div>
+<dl class="kv"><dt>Order</dt><dd>WF-10482 · £86.40 · paid 14:02 via Stripe</dd><dt>Customer</dt><dd>Hannah Pryce, Leeds (UK region)</dd><dt>Attempts</dt><dd class="fig">4 of 5 · next in 18 min</dd><dt>Key</dt><dd class="mono">order:wf-10482:invoice</dd></dl>
+<div><div class="muted small" style="margin-bottom:6px">Xero response</div><div class="code">{
+  <span class="k">"Type"</span>: "ValidationException",
+  <span class="k">"Elements"</span>: [{ <span class="k">"ValidationErrors"</span>: [
+    { <span class="e">"Message"</span>: "Account code '200' is not a valid code for this document." } ] }]
+}</div></div>
+<div style="display:flex;gap:var(--s2);flex-wrap:wrap"><button class="btn primary"><svg class="icon s" aria-hidden="true"><use href="#i-rotate-cw"/></svg>Retry now</button><button class="btn">Ignore with reason</button><button class="btn ghost" style="margin-left:auto"><svg class="icon s" aria-hidden="true"><use href="#i-copy"/></svg>Copy payload</button></div>
+</div></aside></div><p class="synthetic">Synthetic demo data. Brand, orders and customers are fictional.</p></div></main></div></body></html>

@@ -1,0 +1,172 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Conversations · Weft</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@400;500;600;650;700&family=Spline+Sans+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Weft design system v1 — "workshop ledger". Operate mode, dense, quiet; the 24-hour tape is the one remembered element. */
+:root{
+  --bg:#F1F4F3; --surface:#FFFFFF; --surface-2:#F7F9F8; --hover:#EBF0EE;
+  --line:#DCE3E0; --line-strong:#C3CDC9;
+  --ink:#10181B; --ink-2:#2F3B3D; --ink-3:#4F5C5E; --ink-4:#58666A;
+  --pine:#1B6B4A; --pine-strong:#14543A; --pine-soft:#E2F1E9; --pine-line:#B7D9C6;
+  --amber:#865509; --amber-soft:#FBF0D8; --amber-line:#EBCF93;
+  --red:#B1281D; --red-soft:#FCEBE8; --red-line:#F0B8B0;
+  --font:"Albert Sans",system-ui,sans-serif; --mono:"Spline Sans Mono",ui-monospace,monospace;
+  --s1:4px;--s2:8px;--s3:12px;--s4:16px;--s5:20px;--s6:24px;--s7:32px;
+  --r-s:4px;--r:6px;--r-l:10px;
+  --pop:0 12px 32px -12px rgba(16,24,27,.28),0 2px 6px rgba(16,24,27,.08);
+}
+*{box-sizing:border-box;margin:0}
+html,body{background:var(--bg)}
+body{font:14px/1.5 var(--font);color:var(--ink);-webkit-font-smoothing:antialiased}
+a{color:var(--pine-strong);text-decoration:none}a:hover{text-decoration:underline;text-underline-offset:3px}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--pine);outline-offset:2px;border-radius:var(--r-s)}
+h1,h2,h3{font-weight:650;letter-spacing:-.012em}
+.mono{font-family:var(--mono);font-size:12.5px;letter-spacing:0}
+.fig{font-variant-numeric:tabular-nums}
+.muted{color:var(--ink-3)}.small{font-size:13px}
+.icon{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.icon.s{width:14px;height:14px}.icon.l{width:18px;height:18px}
+kbd{font:500 11px var(--mono);border:1px solid var(--line-strong);border-bottom-width:2px;border-radius:4px;padding:0 5px;background:var(--surface);color:var(--ink-3)}
+
+/* shell */
+.app{display:grid;grid-template-columns:232px minmax(0,1fr);grid-template-rows:48px minmax(0,1fr);height:100vh;overflow:hidden}
+.top{grid-column:1/-1;display:flex;align-items:center;gap:var(--s4);padding:0 var(--s4);background:var(--ink);color:#EAF0EE}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:17px;letter-spacing:-.02em;width:216px;color:#fff}
+.env{display:inline-flex;background:#243034;border-radius:var(--r);padding:2px;gap:2px}
+.env button{border:0;background:none;color:#B9C6C3;font-size:12.5px;font-weight:600;padding:4px 12px;border-radius:4px}
+.env button[aria-pressed=true]{background:#fff;color:var(--ink)}
+.env button[aria-pressed=true].live{background:var(--red);color:#fff}
+.top .find{margin-left:auto;display:flex;align-items:center;gap:8px;height:30px;width:300px;padding:0 10px;border-radius:var(--r);background:#243034;color:#B9C6C3;border:0}
+.top .find kbd{margin-left:auto;background:#1B2528;border-color:#3A484C;color:#B9C6C3}
+.me{width:28px;height:28px;border-radius:50%;background:var(--pine-soft);color:var(--pine-strong);display:grid;place-items:center;font-weight:700;font-size:12px}
+.rail{background:var(--surface);border-right:1px solid var(--line);padding:var(--s3) var(--s2);overflow:auto;display:flex;flex-direction:column;gap:2px}
+.rail .grp{font-size:12px;font-weight:600;color:var(--ink-4);padding:14px 10px 4px}
+.rail a{display:flex;align-items:center;gap:10px;padding:6px 10px;border-radius:var(--r);color:var(--ink-2);font-weight:500}
+.rail a:hover{background:var(--hover);text-decoration:none}
+.rail a[aria-current]{background:var(--pine-soft);color:var(--pine-strong);font-weight:650}
+.rail a .n{margin-left:auto;font-size:12px;font-variant-numeric:tabular-nums;color:var(--ink-3)}
+.rail a .n.hot{background:var(--red);color:#fff;border-radius:999px;padding:0 7px;font-weight:700}
+.rail .soon{margin-left:auto;font-size:11.5px;color:var(--ink-4)}
+.main{overflow:auto;min-width:0}
+.page{padding:var(--s5) var(--s6) var(--s7);max-width:1240px}
+.phead{display:flex;align-items:flex-end;gap:var(--s4);margin-bottom:var(--s4)}
+.phead h1{font-size:24px}
+.phead p{color:var(--ink-3);margin-top:2px}
+.phead .acts{margin-left:auto;display:flex;gap:var(--s2)}
+
+/* controls */
+.btn{white-space:nowrap;display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border:1px solid var(--line-strong);border-radius:var(--r);background:var(--surface);font-weight:600;font-size:13px}
+.btn:hover{background:var(--hover)}
+.btn.primary{background:var(--pine);border-color:var(--pine);color:#fff}.btn.primary:hover{background:var(--pine-strong)}
+.btn.sm{height:28px;padding:0 9px;font-size:12.5px}
+.btn.ghost{border-color:transparent;background:none}
+.seg{display:inline-flex;background:var(--hover);border-radius:var(--r);padding:2px;gap:2px}
+.seg button{border:0;background:none;border-radius:4px;padding:4px 11px;font-size:13px;font-weight:600;color:var(--ink-3)}
+.seg button[aria-pressed=true]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(16,24,27,.14)}
+.seg .c{margin-left:6px;font-weight:500;color:var(--ink-4)}
+.trigger{display:inline-flex;align-items:center;gap:8px;height:32px;padding:0 10px 0 12px;border:1px solid var(--line-strong);border-radius:var(--r);background:var(--surface);font-weight:500}
+.trigger .icon:last-child{color:var(--ink-4)}
+.cbx,.swt{display:inline-flex;align-items:center;gap:8px;font-size:13px}
+.cbx .box{width:16px;height:16px;border:1.5px solid var(--line-strong);border-radius:4px;background:var(--surface);display:grid;place-items:center;color:#fff}
+.cbx[aria-checked=true] .box{background:var(--pine);border-color:var(--pine)}
+.swt .track{width:30px;height:18px;border-radius:999px;background:var(--line-strong);position:relative}
+.swt .track::after{content:"";position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:#fff}
+.swt[aria-checked=true] .track{background:var(--pine)}.swt[aria-checked=true] .track::after{left:14px}
+.badge{display:inline-flex;align-items:center;gap:5px;height:20px;padding:0 7px;border-radius:var(--r-s);font-size:12px;font-weight:600;background:var(--hover);color:var(--ink-2);white-space:nowrap}
+.badge.ok{background:var(--pine-soft);color:var(--pine-strong)}.badge.warn{background:var(--amber-soft);color:var(--amber)}.badge.bad{background:var(--red-soft);color:var(--red)}
+.badge i{width:6px;height:6px;border-radius:50%;background:currentColor}
+.ch{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:5px;background:var(--hover);font:700 11px var(--font);color:var(--ink-2)}
+
+/* the tape: last 24 hours of runs, one tick per 30 minutes */
+.tape{display:grid;grid-template-columns:repeat(48,1fr);gap:2px;height:22px;align-items:end}
+.tape i{display:block;background:var(--line);border-radius:1px;height:30%}
+.tape i.ok{background:var(--pine);height:60%}.tape i.warn{background:#C99A3B;height:85%}.tape i.bad{background:var(--red);height:100%}
+.tapewrap{display:grid;gap:6px}
+.tapelabels{display:flex;justify-content:space-between;font-size:12px;color:var(--ink-4)}
+
+/* panels, tables, lists */
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-l)}
+.panel-h{display:flex;align-items:center;gap:var(--s2);padding:12px 16px;border-bottom:1px solid var(--line)}
+.panel-h h2{font-size:15px}
+.panel-b{padding:16px;grid-template-columns:minmax(0,1fr)}.panel-b>*{min-width:0}
+.toolbar{display:flex;align-items:center;gap:var(--s3);margin-bottom:var(--s3);flex-wrap:wrap}
+table.t{width:100%;border-collapse:collapse;font-size:13.5px}
+table.t th{text-align:left;font-weight:600;font-size:12.5px;color:var(--ink-3);padding:8px 12px;border-bottom:1px solid var(--line);background:var(--surface-2);white-space:nowrap}
+table.t td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+table.t tr:last-child td{border-bottom:0}
+table.t .n{text-align:right;font-variant-numeric:tabular-nums}
+table.t tbody tr:hover{background:var(--surface-2)}
+.kv{display:grid;grid-template-columns:110px minmax(0,1fr);gap:8px 12px}.kv dt{color:var(--ink-3)}.kv dd{margin:0}
+.code{font:12.5px/1.5 var(--mono);background:#101A1D;color:#DCE8E4;border-radius:var(--r);padding:12px 14px;overflow:auto;white-space:pre}
+.code .k{color:#8FD0B0}.code .e{color:#FF9D8F}
+.callout{display:flex;gap:10px;padding:10px 12px;border-radius:var(--r);background:var(--amber-soft);border:1px solid var(--amber-line);color:#5C3B05}
+.callout.ok{background:var(--pine-soft);border-color:var(--pine-line);color:var(--pine-strong)}
+.synthetic{font-size:12.5px;color:var(--ink-4);margin-top:var(--s5)}
+@media (max-width:1180px){.app{grid-template-columns:60px minmax(0,1fr)}.rail .grp,.rail a span:not(.n){display:none}.rail a{justify-content:center}.rail a .n{display:none}.brand{width:auto}.top .find{width:160px}}
+@media (max-width:760px){.app{grid-template-columns:minmax(0,1fr)}.rail{display:none}.page{padding:var(--s4)}.phead{flex-wrap:wrap}.top .find{display:none}.env{margin-left:auto}}
+</style></head><body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="i-bot" viewBox="0 0 24 24"><path d="M12 8V4H8" />
+  <rect width="16" height="12" x="4" y="8" rx="2" />
+  <path d="M2 14h2" />
+  <path d="M20 14h2" />
+  <path d="M15 13v2" />
+  <path d="M9 13v2" /></symbol><symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5" /></symbol><symbol id="i-flag" viewBox="0 0 24 24"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
+  <line x1="4" x2="4" y1="22" y2="15" /></symbol><symbol id="i-layout-dashboard" viewBox="0 0 24 24"><rect width="7" height="9" x="3" y="3" rx="1" />
+  <rect width="7" height="5" x="14" y="3" rx="1" />
+  <rect width="7" height="9" x="14" y="12" rx="1" />
+  <rect width="7" height="5" x="3" y="16" rx="1" /></symbol><symbol id="i-receipt" viewBox="0 0 24 24"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z" />
+  <path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8" />
+  <path d="M12 17.5v-11" /></symbol><symbol id="i-package" viewBox="0 0 24 24"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z" />
+  <path d="M12 22V12" />
+  <path d="m3.3 7 7.703 4.734a2 2 0 0 0 1.994 0L20.7 7" />
+  <path d="m7.5 4.27 9 5.15" /></symbol><symbol id="i-shopping-bag" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
+  <path d="M3 6h18" />
+  <path d="M16 10a4 4 0 0 1-8 0" /></symbol><symbol id="i-plug" viewBox="0 0 24 24"><path d="M12 22v-5" />
+  <path d="M9 8V2" />
+  <path d="M15 8V2" />
+  <path d="M18 8v5a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V8Z" /></symbol><symbol id="i-landmark" viewBox="0 0 24 24"><line x1="3" x2="21" y1="22" y2="22" />
+  <line x1="6" x2="6" y1="18" y2="11" />
+  <line x1="10" x2="10" y1="18" y2="11" />
+  <line x1="14" x2="14" y1="18" y2="11" />
+  <line x1="18" x2="18" y1="18" y2="11" />
+  <polygon points="12 2 20 7 4 7" /></symbol><symbol id="i-message-square" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></symbol><symbol id="i-book-open" viewBox="0 0 24 24"><path d="M12 7v14" />
+  <path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z" /></symbol><symbol id="i-flask-conical" viewBox="0 0 24 24"><path d="M10 2v7.527a2 2 0 0 1-.211.896L4.72 20.55a1 1 0 0 0 .9 1.45h12.76a1 1 0 0 0 .9-1.45l-5.069-10.127A2 2 0 0 1 14 9.527V2" />
+  <path d="M8.5 2h7" />
+  <path d="M7 16h10" /></symbol><symbol id="i-activity" viewBox="0 0 24 24"><path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2" /></symbol><symbol id="i-triangle-alert" viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" />
+  <path d="M12 9v4" />
+  <path d="M12 17h.01" /></symbol><symbol id="i-git-compare" viewBox="0 0 24 24"><circle cx="18" cy="18" r="3" />
+  <circle cx="6" cy="6" r="3" />
+  <path d="M13 6h3a2 2 0 0 1 2 2v7" />
+  <path d="M11 18H8a2 2 0 0 1-2-2V9" /></symbol><symbol id="i-settings" viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
+  <circle cx="12" cy="12" r="3" /></symbol></svg>
+<div class="app">
+<header class="top"><a class="brand" href="index.html"><svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><rect width="24" height="24" rx="6" fill="#1B6B4A"/><path d="M3.2 12C5.2 5.2 9.2 5.2 12 12C14.8 18.8 18.8 18.8 20.8 12" fill="none" stroke="#A8DBC0" stroke-width="2.7" stroke-linecap="round"/><path d="M3.2 12C5.2 18.8 9.2 18.8 12 12C14.8 5.2 18.8 5.2 20.8 12" fill="none" stroke="#1B6B4A" stroke-width="4.4" stroke-linecap="butt"/><path d="M3.2 12C5.2 18.8 9.2 18.8 12 12C14.8 5.2 18.8 5.2 20.8 12" fill="none" stroke="#FFFFFF" stroke-width="2.7" stroke-linecap="round"/></svg>Weft</a>
+<div class="env" role="group" aria-label="Environment"><button aria-pressed="true">Sandbox</button><button class="live" aria-pressed="false">Live</button></div>
+<button class="find" aria-label="Search"><svg class="icon s" aria-hidden="true"><use href="#i-search"/></svg><span>Search orders, SKUs, runs</span><kbd>⌘K</kbd></button>
+<span class="me" aria-label="Maya Okafor">MO</span></header>
+<nav class="rail" aria-label="Main"><div class="grp">Overview</div><a href="#"><svg class="icon" aria-hidden="true"><use href="#i-layout-dashboard"/></svg><span>Overview</span></a><div class="grp">Commerce</div><a href="#"><svg class="icon" aria-hidden="true"><use href="#i-receipt"/></svg><span>Orders</span></a><a href="#"><svg class="icon" aria-hidden="true"><use href="#i-package"/></svg><span>Products</span><span class="n">3</span></a><div class="grp">Channels</div><a href="#"><svg class="icon" aria-hidden="true"><use href="#i-shopping-bag"/></svg><span>Shopify</span></a><a href="#"><svg class="icon" aria-hidden="true"><use href="#i-plug"/></svg><span>WooCommerce</span><span class="soon">Soon</span></a><div class="grp">Finance</div><a href="#"><svg class="icon" aria-hidden="true"><use href="#i-landmark"/></svg><span>Xero</span></a><div class="grp">Assistant</div><a href="assistant.html" aria-current="page"><svg class="icon" aria-hidden="true"><use href="#i-message-square"/></svg><span>Conversations</span></a><a href="#"><svg class="icon" aria-hidden="true"><use href="#i-book-open"/></svg><span>Knowledge</span></a><a href="#"><svg class="icon" aria-hidden="true"><use href="#i-flask-conical"/></svg><span>Evals</span></a><div class="grp">Operations</div><a href="#"><svg class="icon" aria-hidden="true"><use href="#i-activity"/></svg><span>Runs</span></a><a href="exceptions.html"><svg class="icon" aria-hidden="true"><use href="#i-triangle-alert"/></svg><span>Exceptions</span><span class="n hot">6</span></a><a href="reconciliation.html"><svg class="icon" aria-hidden="true"><use href="#i-git-compare"/></svg><span>Reconciliation</span><span class="n">3</span></a><div class="grp">Admin</div><a href="#"><svg class="icon" aria-hidden="true"><use href="#i-settings"/></svg><span>Settings</span></a></nav>
+<main class="main"><div class="page">
+<div class="phead"><div><h1>Conversations</h1><p>Every answer shows where it came from. Mark a wrong answer and it becomes an evaluation case.</p></div>
+<div class="acts"><div class="seg" role="group" aria-label="Filter"><button aria-pressed="true">All<span class="c">86</span></button><button aria-pressed="false">Handed over<span class="c">9</span></button><button aria-pressed="false">Flagged<span class="c">2</span></button></div></div></div>
+<div style="display:grid;grid-template-columns:300px minmax(0,1fr) 340px;gap:var(--s4);align-items:start">
+<div class="panel" style="overflow:hidden"><a href="#" style="display:block;padding:10px 14px;border-bottom:1px solid var(--line);color:inherit;background:var(--pine-soft);box-shadow:inset 3px 0 0 var(--pine)"><div style="font-weight:600">Return window for a wrong part</div><div class="small muted" style="display:flex;gap:6px;align-items:center"><span class="badge ok" style="height:18px"><i></i></span>Answered by AI · 2 sources</div></a><a href="#" style="display:block;padding:10px 14px;border-bottom:1px solid var(--line);color:inherit;"><div style="font-weight:600">Where is my order WF-10431?</div><div class="small muted" style="display:flex;gap:6px;align-items:center"><span class="badge ok" style="height:18px"><i></i></span>Answered by AI · order lookup</div></a><a href="#" style="display:block;padding:10px 14px;border-bottom:1px solid var(--line);color:inherit;"><div style="font-weight:600">Do you ship to Norway?</div><div class="small muted" style="display:flex;gap:6px;align-items:center"><span class="badge warn" style="height:18px"><i></i></span>Handed over · asked for a person</div></a><a href="#" style="display:block;padding:10px 14px;border-bottom:1px solid var(--line);color:inherit;"><div style="font-weight:600">Will these pads fit a 2016 CB500F?</div><div class="small muted" style="display:flex;gap:6px;align-items:center"><span class="badge bad" style="height:18px"><i></i></span>Flagged wrong · fixed in Knowledge</div></a><a href="#" style="display:block;padding:10px 14px;border-bottom:1px solid var(--line);color:inherit;"><div style="font-weight:600">Discount code not working</div><div class="small muted" style="display:flex;gap:6px;align-items:center"><span class="badge warn" style="height:18px"><i></i></span>Handed over · outside scope</div></a></div>
+<div class="panel"><div class="panel-h"><h2 style="font-size:15px">Return window for a wrong part</h2><span class="muted small">Today 10:42 · UK region · anonymous visitor</span></div>
+<div class="panel-b" style="display:grid;gap:var(--s4)">
+<div class="callout ok"><svg class="icon" aria-hidden="true"><use href="#i-bot"/></svg><span>The visitor was told at the start: “I’m an AI assistant for Halden Moto Parts. I can answer from our policies and look up orders; a person can take over any time.”</span></div>
+<div style="max-width:82%"><div class="muted small">Visitor</div><div style="background:var(--hover);padding:10px 12px;border-radius:10px 10px 10px 2px">I ordered a chain for my bike and it turns out to be the wrong length. How long do I have to return it?</div></div>
+<div style="max-width:90%;margin-left:auto"><div class="muted small" style="text-align:right">Assistant</div><div style="background:var(--pine-soft);padding:10px 12px;border-radius:10px 10px 2px 10px">You can return unused items within <b>30 days of delivery</b>. You need the order number, and the part must be unused, uninstalled and in its original packaging. Refunds go to the original payment method, or as store credit if there is no original payment on file.<div class="small" style="margin-top:8px;color:var(--pine-strong)">Sources: <a href="#">Returns policy §2</a> · <a href="#">Fitment returns §1</a></div></div></div>
+<div style="max-width:82%"><div class="muted small">Visitor</div><div style="background:var(--hover);padding:10px 12px;border-radius:10px 10px 10px 2px">Are the front brake pads for my CB500F in stock, and what do they cost to the UK?</div></div>
+<div style="max-width:90%;margin-left:auto"><div class="muted small" style="text-align:right">Assistant · used a live tool</div><div style="background:var(--pine-soft);padding:10px 12px;border-radius:10px 10px 2px 10px">Yes, the front pads are in stock (<b>38 available</b>) and costs <b>£24.90</b> in the UK region.<div class="small" style="margin-top:8px;color:var(--pine-strong)">Numbers came from <span class="mono">get_price_stock(HM-BP-0196, region=UK)</span></div></div></div>
+</div></div>
+<aside style="display:grid;gap:var(--s4)">
+<div class="panel"><div class="panel-h"><h2>How it answered</h2></div><div class="panel-b" style="display:grid;gap:12px">
+<div><div class="muted small">Retrieved passages</div><div style="margin-top:6px;display:grid;gap:8px"><div style="border-left:3px solid var(--pine);padding-left:10px"><b class="small">Returns policy §2</b><div class="small muted">“Items can be returned within 30 days of delivery if unused and in original packaging.”</div><div class="small mono muted">score 0.83</div></div><div style="border-left:3px solid var(--pine);padding-left:10px"><b class="small">Fitment returns §1</b><div class="small muted">“A part ordered for the wrong fitment may be returned if it was never installed.”</div><div class="small mono muted">score 0.79</div></div></div></div>
+<div><div class="muted small">Tool calls</div><div class="code" style="margin-top:6px">get_price_stock
+  sku: "HM-BP-0196"
+  region: "UK"
+→ { available: 38, price: 2490, currency: "GBP" }</div></div>
+<div class="callout ok" style="padding:8px 10px"><svg class="icon s" aria-hidden="true"><use href="#i-check"/></svg><span class="small">Checked: every price and stock number in the answer matches a tool result.</span></div></div></div>
+<div class="panel"><div class="panel-h"><h2>Evaluation</h2></div><div class="panel-b" style="display:grid;gap:10px"><div class="small">This question is case <b class="mono">eval-031</b> in the set of 60.</div><div style="display:flex;gap:8px;align-items:center"><span class="badge ok"><i></i>Passed on last run</span><span class="muted small">Run 14 · 52 of 60 passed (87%)</span></div><div style="display:flex;gap:var(--s2)"><button class="btn"><svg class="icon s" aria-hidden="true"><use href="#i-flag"/></svg>Mark wrong</button><button class="btn ghost">Take over</button></div></div></div>
+</aside></div><p class="synthetic">Synthetic demo data. Brand, orders and customers are fictional.</p></div></main></div></body></html>
