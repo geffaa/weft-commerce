@@ -64,7 +64,7 @@ export class XeroService {
     }
   }
 
-  private async current() {
+  async current() {
     const [row] = await this.db.select().from(connection).where(eq(connection.kind, "xero"));
     if (!row) throw new ChannelError("No Xero connection is configured", "validation");
     let api = this.cache.get(row.id);

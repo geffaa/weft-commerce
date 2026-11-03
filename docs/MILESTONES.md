@@ -25,7 +25,7 @@ Estimasi jujur untuk satu orang paruh waktu: **±21 hari kerja (3–4 minggu)**,
 ## M3 — Xero, exceptions, rekonsiliasi, konsol (±5 hari)
 - [x] Koneksi Xero (Custom Connection `client_credentials`, Demo Company); faktur + pembayaran idempoten
 - [x] Worker outbox: backoff, dead-letter, klasifikasi error (dikerjakan di M2)
-- [ ] Rekonsiliasi malam (stok dan Xero) dengan laporan selisih dan "fix" (selesai: stok Shopify, jadwal malam; sisa: sisi Xero = order terbayar tanpa faktur)
+- [x] Rekonsiliasi malam (stok dan Xero) dengan laporan selisih dan "fix"
 - [ ] Konsol Next.js: Overview, Connections, Runs, Exceptions, Reconciliation, Products, Orders
 - [ ] Peran dan audit log di konsol (backend selesai di M2; sisa: UI)
 - **Fitur PRD:** F5, F6, F7, F8, F11

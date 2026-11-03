@@ -2,7 +2,7 @@ import { ChannelError } from "../outbox/errors";
 
 export type XeroCreds = { clientId: string; clientSecret: string };
 export const XERO_SCOPES = "accounting.invoices accounting.payments accounting.contacts accounting.settings.read";
-export type XeroInvoice = { InvoiceID: string; InvoiceNumber?: string; Status: string; Total: number; AmountDue: number; AmountPaid: number; Reference?: string };
+export type XeroInvoice = { InvoiceID: string; InvoiceNumber?: string; Status: string; Total: number; AmountDue: number; AmountPaid: number; Reference?: string; CurrencyCode?: string };
 export type XeroInvoiceInput = {
   reference: string; contactId: string; currency: string; date: string; dueDate: string;
   lines: { description: string; quantity: number; unitAmount: number; accountCode: string }[];
@@ -14,6 +14,8 @@ export interface XeroApi {
   findContactByEmail(email: string): Promise<string | null>;
   createContact(name: string, email: string | null, idempotencyKey: string): Promise<string>;
   findInvoiceByReference(reference: string): Promise<XeroInvoice | null>;
+  /** Semua faktur yang dibuat Weft (Reference berawalan WEFT-), untuk rekonsiliasi. */
+  listWeftInvoices(): AsyncGenerator<XeroInvoice>;
   createInvoice(input: XeroInvoiceInput, idempotencyKey: string): Promise<XeroInvoice>;
   createPayment(invoiceId: string, accountCode: string, amount: number, date: string, idempotencyKey: string): Promise<void>;
 }
@@ -100,6 +102,15 @@ export class XeroClient implements XeroApi {
     const q = new URLSearchParams({ where: `Reference=="${reference.replace(/"/g, "")}"` });
     const d = await this.call<{ Invoices: XeroInvoice[] }>("GET", `/Invoices?${q}`);
     return d.Invoices.find((i) => i.Status !== "DELETED" && i.Status !== "VOIDED") ?? null;
+  }
+
+  async *listWeftInvoices(): AsyncGenerator<XeroInvoice> {
+    const where = encodeURIComponent('Reference!=null && Reference.StartsWith("WEFT-")');
+    for (let page = 1; ; page++) {
+      const d = await this.call<{ Invoices: XeroInvoice[] }>("GET", `/Invoices?where=${where}&page=${page}&Statuses=DRAFT,SUBMITTED,AUTHORISED,PAID,VOIDED,DELETED`);
+      yield* d.Invoices;
+      if (d.Invoices.length < 100) return; // Xero memberi 100 per halaman
+    }
   }
 
   async createInvoice(i: XeroInvoiceInput, idempotencyKey: string) {
