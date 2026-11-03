@@ -1,0 +1,1 @@
+ALTER TABLE "hub"."outbox" ADD COLUMN "locked_until" timestamp with time zone;

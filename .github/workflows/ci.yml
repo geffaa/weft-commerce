@@ -3,6 +3,9 @@ on: [push, pull_request]
 jobs:
   check:
     runs-on: ubuntu-latest
+    env:
+      DATABASE_URL_HUB: postgres://weft:weft@localhost:5432/hub_test
+      DATABASE_URL_HUB_TEST: postgres://weft:weft@localhost:5432/hub_test
     services:
       postgres:
         image: pgvector/pgvector:pg16
@@ -19,6 +22,11 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: 22, cache: pnpm }
       - run: pnpm install --frozen-lockfile
+      - name: Prepare hub test database
+        run: |
+          PGPASSWORD=weft psql -h localhost -U weft -d postgres -c "create database hub_test"
+          PGPASSWORD=weft psql -h localhost -U weft -d hub_test -c "create extension vector"
+          pnpm --filter @weft/hub db:migrate
       - run: pnpm typecheck
       - run: pnpm lint
       - run: pnpm test

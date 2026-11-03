@@ -14,13 +14,13 @@ Estimasi jujur untuk satu orang paruh waktu: **±21 hari kerja (3–4 minggu)**,
 - **Verifikasi:** pembelian Stripe uji dalam GBP selesai; suku cadang yang tidak cocok dengan motor di garage memunculkan peringatan; tes E2E Playwright hijau. **Terpenuhi 3 Nov 2026** (5 tes, `pnpm --filter @weft/storefront e2e`); sisa: spike provider kustom dan tes UI untuk 3DS.
 
 ## M2 — Hub dan Shopify (±5 hari)
-- [ ] NestJS hub: modul `connections`, `sync`, `outbox`, `webhooks`; skema `hub`; guard peran
-- [ ] Koneksi Shopify (token, uji, scope); impor produk/varian/stok
-- [ ] Webhook Shopify (HMAC, receipt idempoten); pemetaan SKU dan deteksi konflik
-- [ ] Ledger order terpadu (storefront + Shopify); buku besar stok; dorong stok absolut ke Shopify
-- [ ] Cek halaman resmi Shopify: laju API dan nama mutasi stok; jadikan konfigurasi
+- [x] NestJS hub: modul `connections`, `sync`, `outbox`, `webhooks`; skema `hub`; guard peran
+- [x] Koneksi Shopify (token, uji, scope); impor produk/varian/stok
+- [x] Webhook Shopify (HMAC, receipt idempoten); pemetaan SKU dan deteksi konflik (pendaftaran webhook via `POST /connections/:id/webhooks` sudah ada, diuji dengan tiruan; belum dicoba ke Shopify karena butuh URL https publik)
+- [x] Ledger order terpadu (storefront + Shopify); buku besar stok; dorong stok absolut ke Shopify
+- [x] Cek halaman resmi Shopify: laju API dan nama mutasi stok; jadikan konfigurasi (mutasi dan versi dicek; laju API belum diukur)
 - **Fitur PRD:** F3, F4, F6 (dasar), F11 (HMAC, peran)
-- **Verifikasi:** webhook order dikirim 3 kali → stok turun sekali; tes konkurensi 50 order/stok 10 → 10 sukses.
+- **Verifikasi:** webhook order dikirim 3 kali → stok turun sekali; tes konkurensi 50 order/stok 10 → 10 sukses. **Terpenuhi 3 Nov 2026** (11 tes hub; tanpa `FOR UPDATE` tes konkurensi gagal dengan 26 sukses, jadi tesnya terbukti menguji kunci).
 
 ## M3 — Xero, exceptions, rekonsiliasi, konsol (±5 hari)
 - [ ] Koneksi Xero (OAuth, demo company); faktur + pembayaran idempoten
