@@ -55,8 +55,8 @@ export default async function Collection({ params, searchParams }: { params: Pro
           <aside className="f" aria-label="Filters">
             {garage && (
               <section><h2>My bike</h2>
-                <Link href={toggle("fits")} className="swt" role="switch" aria-checked={!!sp.fits}>
-                  <span className="tr" style={sp.fits ? undefined : { background: "var(--line-2)" }} />Only parts that fit
+                <Link href={toggle("fits")} className={`swt${sp.fits ? "" : " off"}`} role="switch" aria-checked={!!sp.fits}>
+                  <span className="tr" />Only parts that fit
                 </Link>
               </section>
             )}

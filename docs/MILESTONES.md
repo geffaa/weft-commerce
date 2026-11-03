@@ -40,9 +40,9 @@ Estimasi jujur untuk satu orang paruh waktu: **±21 hari kerja (3–4 minggu)**,
 - **Verifikasi:** skor ≥ 85% dan 0 jawaban harga/stok tanpa alat; serangan injeksi pada dokumen tidak mengubah perilaku alat. **Terpenuhi 3 Nov 2026 dengan model nyata (Groq gpt-oss-120b):** run pertama 51/60 (85,0%), setelah menyetel prompt/ambang 59/60 (98,3%), set penahan 23/24 (95,8%); 0 angka tanpa alat di semua run; injeksi via dokumen: 0 pemanggilan alat. Lihat catatan kejujuran di BREAKDOWN.
 
 ## M5 — Poles, bukti, rilis (±3 hari)
-- [ ] Audit screenshot semua layar di 1440 dan 390 px; perbaikan
-- [ ] README Inggris, video demo 60 detik, laporan evaluasi, studi kasus
-- [ ] Deploy demo sandbox (atau alasan ditunda), repo bersih
+- [x] Audit screenshot semua layar di 1440 dan 390 px; perbaikan
+- [x] README Inggris, video demo (50 detik), laporan evaluasi, studi kasus
+- [x] Deploy demo sandbox (ditunda, alasan di README: butuh domain, rahasia, dan keputusan hosting Postgres/model embedding), repo bersih
 - **Verifikasi:** semua tes hijau dari checkout bersih; tangkapan layar tanpa error konsol.
 
 ## Fase berikutnya (tidak dikerjakan sekarang)

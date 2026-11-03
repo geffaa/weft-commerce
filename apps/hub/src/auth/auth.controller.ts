@@ -1,9 +1,13 @@
+import type { Request } from "express";
 import { BadRequestException, Body, Controller, Get, HttpCode, Inject, Param, Patch, Post, Req, UseGuards, ConflictException } from "@nestjs/common";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { DB, type Db } from "../db/db";
 import { member, ROLES } from "../db/schema";
 import { AuthService } from "./auth.service";
+import { RateLimiter } from "../assistant/rate-limiter";
+import { ENV } from "../common/tokens";
+import type { Env } from "../common/env";
 import { Roles, RolesGuard, type AuthedRequest } from "./roles.guard";
 
 const login = z.object({ email: z.string().email(), password: z.string().min(1) });
@@ -13,12 +17,20 @@ const pub = ({ passwordHash: _p, ...m }: typeof member.$inferSelect) => m;
 
 @Controller()
 export class AuthController {
-  constructor(@Inject(AuthService) private readonly auth: AuthService, @Inject(DB) private readonly db: Db) {}
+  constructor(
+    @Inject(AuthService) private readonly auth: AuthService,
+    @Inject(DB) private readonly db: Db,
+    @Inject(RateLimiter) private readonly limiter: RateLimiter,
+    @Inject(ENV) private readonly env: Env,
+  ) {}
 
   @Post("auth/login") @HttpCode(200)
-  login(@Body() body: unknown) {
+  login(@Body() body: unknown, @Req() req: Request) {
     const p = login.safeParse(body);
     if (!p.success) throw new BadRequestException("email and password are required");
+    // Batas tebakan sandi: per IP dan per email (menahan serangan dari satu IP maupun terhadap satu akun).
+    this.limiter.hit(`login-ip:${req.ip}`, this.env.LOGIN_MAX_PER_IP, 15 * 60_000);
+    this.limiter.hit(`login-email:${p.data.email.toLowerCase()}`, this.env.LOGIN_MAX_PER_EMAIL, 15 * 60_000);
     return this.auth.login(p.data.email, p.data.password);
   }
 

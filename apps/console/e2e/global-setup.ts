@@ -13,7 +13,7 @@ export default async function setup() {
   // Anggota khusus untuk tes ganti peran, agar tes lain tidak ikut berubah.
   await post("/members", token, { email: "rolechange@example.com", password: "rolechange-password-123", role: "support" });
 
-  const db = new pg.Client({ connectionString: "postgres://weft:weft@localhost:54330/hub_e2e" });
+  const db = new pg.Client({ connectionString: `postgres://weft:weft@localhost:${process.env.E2E_PG_PORT ?? "54330"}/hub_e2e` });
   await db.connect();
   const [stockRun] = (await db.query("insert into hub.run(kind,trigger,status,finished_at,stats) values ('reconcile.stock','seed','done',now(),'{}') returning id")).rows;
   const [xeroRun] = (await db.query("insert into hub.run(kind,trigger,status,finished_at,stats) values ('reconcile.xero','seed','done',now(),'{}') returning id")).rows;

@@ -1,6 +1,9 @@
 export function money(minor: number, currency: string) {
-  const exp = ["JPY", "KRW"].includes(currency.toUpperCase()) ? 0 : 2;
-  return new Intl.NumberFormat("en-GB", { style: "currency", currency: currency.toUpperCase() }).format(minor / 10 ** exp);
+  const c = currency.toUpperCase();
+  const exp = ["JPY", "KRW"].includes(c) ? 0 : 2;
+  // Lokal per mata uang supaya USD tampil "$148.75", bukan "US$148.75".
+  const locale = ({ USD: "en-US", AUD: "en-AU" } as Record<string, string>)[c] ?? "en-GB";
+  return new Intl.NumberFormat(locale, { style: "currency", currency: c }).format(minor / 10 ** exp);
 }
 export function ago(iso: string | Date | null | undefined, now = Date.now()) {
   if (!iso) return "never";

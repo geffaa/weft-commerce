@@ -51,7 +51,9 @@ export class ImportService {
           productTitle: v.productTitle, variantTitle: v.variantTitle, state: v.state, conflictReason: v.conflictReason, updatedAt: new Date(),
         };
         await this.db.insert(skuMap).values(values).onConflictDoUpdate({ target: [skuMap.channel, skuMap.channelVariantId], set: values });
-        if (v.state === "mapped" && v.tracked && v.available !== null && v.available > 0) {
+        // Stok awal hanya untuk SKU yang belum punya riwayat di buku besar: Weft adalah sumber kebenaran,
+        // jadi SKU yang sudah dikenal tidak ditambah lagi (menghindari stok terhitung dua kali).
+        if (v.state === "mapped" && v.tracked && v.available !== null && v.available > 0 && !(await this.inventory.hasHistory(v.sku!))) {
           if (await this.inventory.adjust(v.sku!, v.available, "import:shopify", `import:shopify:${v.variantId}`)) stockImported++;
         }
       }

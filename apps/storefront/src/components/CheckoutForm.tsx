@@ -90,7 +90,7 @@ export default function CheckoutForm(p: Props) {
             <div className="in">
               <div className="vat" style={{ marginBottom: 12 }}>Test mode: card 4242 4242 4242 4242, any future date and code. For 3-D Secure use 4000 0027 6000 3184.</div>
               <Elements stripe={stripePromise} options={{ clientSecret: secret, appearance: { theme: "stripe", variables: { colorPrimary: "#0E5A6B", fontFamily: "Albert Sans, system-ui, sans-serif", borderRadius: "8px" } } }}>
-                <PayBox total={total ?? shown} currency={p.currency} />
+                <PayBox total={total ?? shown} currency={p.currency} country={d.country_code} />
               </Elements>
             </div>
           </section>
@@ -107,7 +107,7 @@ export default function CheckoutForm(p: Props) {
   );
 }
 
-function PayBox({ total, currency }: { total: number; currency: string }) {
+function PayBox({ total, currency, country }: { total: number; currency: string; country: string }) {
   const stripe = useStripe(); const elements = useElements(); const router = useRouter();
   const [err, setErr] = useState(""); const [busy, setBusy] = useState(false);
   const pay = async () => {
@@ -121,7 +121,8 @@ function PayBox({ total, currency }: { total: number; currency: string }) {
   };
   return (
     <>
-      <PaymentElement />
+      {/* Negara bawaan mengikuti negara pengiriman, bukan geolokasi IP pembeli. */}
+      <PaymentElement options={{ defaultValues: { billingDetails: { address: { country: country.toUpperCase() } } } }} />
       {err && <p role="alert" style={{ color: "var(--no)", marginTop: 10 }}>{err}</p>}
       <button className="cta" style={{ width: "100%", marginTop: 14 }} disabled={busy || !stripe} onClick={pay}>{busy ? "Processing…" : `Pay ${money(total, currency)}`}</button>
     </>

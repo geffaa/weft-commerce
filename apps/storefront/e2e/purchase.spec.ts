@@ -18,6 +18,15 @@ async function fillDetails(page: Page) {
   await page.getByRole("button", { name: "Continue to payment" }).click();
 }
 
+/** Iframe Stripe mengubah tinggi saat tombol bayar digulir ke tampilan; tunggu sampai posisinya stabil agar klik tidak meleset. */
+async function clickWhenSettled(page: Page, name: RegExp) {
+  const btn = page.getByRole("button", { name });
+  await btn.scrollIntoViewIfNeeded();
+  let last = -1, same = 0;
+  while (same < 6) { const y = Math.round((await btn.boundingBox())!.y); same = y === last ? same + 1 : 0; last = y; await page.waitForTimeout(100); }
+  await btn.click();
+}
+
 async function payWith(page: Page, card: string) {
   const frame = page.frameLocator('iframe[title*="Secure payment input"]').first();
   await frame.getByLabel("Card number").fill(card);
@@ -62,7 +71,7 @@ test("GBP purchase with a test card creates an order", async ({ page }) => {
   await fillDetails(page);
   await expect(page.getByRole("button", { name: /^Pay £/ })).toBeVisible({ timeout: 20_000 });
   await payWith(page, "4242424242424242");
-  await page.getByRole("button", { name: /^Pay £/ }).click();
+  await clickWhenSettled(page, /^Pay £/);
   await expect(page).toHaveURL(/\/order\/order_/, { timeout: 40_000 });
   await expect(page.getByRole("heading", { name: /Order HM-\d+/ })).toBeVisible();
   await expect(page.getByText("£", { exact: false }).first()).toBeVisible();
@@ -75,7 +84,7 @@ test("declined card shows an error and creates no order", async ({ page }) => {
   await fillDetails(page);
   await expect(page.getByRole("button", { name: /^Pay £/ })).toBeVisible({ timeout: 20_000 });
   await payWith(page, "4000000000009995");
-  await page.getByRole("button", { name: /^Pay £/ }).click();
+  await clickWhenSettled(page, /^Pay £/);
   await expect(page.getByRole("alert")).toBeVisible({ timeout: 30_000 });
   await expect(page).toHaveURL(/\/checkout/);
 });

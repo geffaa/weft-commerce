@@ -7,6 +7,9 @@ const schema = z.object({
   SHOPIFY_CLIENT_SECRET: z.string().optional(),
   MEDUSA_WEBHOOK_SECRET: z.string().min(1).default("dev-medusa-secret"),
   PORT: z.coerce.number().default(3100),
+  // Batas percobaan login per 15 menit (per IP dan per email). E2E memakai batas longgar karena login berkali-kali.
+  LOGIN_MAX_PER_IP: z.coerce.number().default(20),
+  LOGIN_MAX_PER_EMAIL: z.coerce.number().default(8),
   // Jeda antar kasus evaluasi (ms) agar tier gratis Groq (token per menit) tidak membatasi laju; 0 untuk tes.
   EVAL_PACING_MS: z.coerce.number().default(0),
   // Aktifkan hanya bila hub terjangkau HANYA lewat proxy tepercaya (storefront): header X-Forwarded-For dipakai untuk batas laju per IP.

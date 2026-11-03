@@ -30,9 +30,9 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           <button aria-pressed={ov.env === "sandbox"} aria-disabled="true" tabIndex={-1}>Sandbox</button>
           <button className="live" aria-pressed={ov.env === "live"} aria-disabled="true" tabIndex={-1}>Live</button>
         </div>
-        <span className="muted" style={{ marginLeft: "auto", color: "#B9C6C3", fontSize: 13 }}>{me.email} · {me.role}</span>
+        <span className="muted who" style={{ marginLeft: "auto", color: "#B9C6C3", fontSize: 13 }}>{me.email} · {me.role}</span>
         <span className="me" aria-hidden>{initials}</span>
-        <form action={logout}><button className="btn sm ghost" style={{ color: "#EAF0EE" }} aria-label="Sign out"><LogOut className="icon s" aria-hidden />Sign out</button></form>
+        <form action={logout}><button className="btn sm ghost" style={{ color: "#EAF0EE" }} aria-label="Sign out"><LogOut className="icon s" aria-hidden /><span className="signout-label">Sign out</span></button></form>
       </header>
       <Nav groups={items} />
       <main className="main"><div className="page">{children}</div></main>

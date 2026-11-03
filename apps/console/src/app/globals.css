@@ -132,6 +132,24 @@ form.inline{display:inline}
 .kv{display:grid;grid-template-columns:140px 1fr;gap:6px 12px;font-size:13.5px}.kv dt{color:var(--ink-3)}.kv dd{margin:0}
 .btn[disabled]{opacity:.5;cursor:not-allowed}
 .hint{font-size:12.5px;color:var(--ink-3)}
-@media(max-width:900px){.app{grid-template-columns:1fr;grid-template-rows:48px auto minmax(0,1fr);height:auto;overflow:visible}.rail{flex-direction:row;overflow:auto;padding:6px}.rail .grp{display:none}.g3,.g4,.g2{grid-template-columns:1fr}.brand{width:auto}.top .find{display:none}.main{overflow:visible}}
+@media(max-width:900px){
+  .app{grid-template-columns:minmax(0,1fr);grid-template-rows:48px auto minmax(0,1fr);height:auto;min-height:100vh;overflow:visible}
+  .top{gap:8px;padding:0 10px;min-width:0}.top .who,.top .signout-label{display:none}.brand{width:auto}.top .find{display:none}
+  /* menu samping jadi bilah geser horizontal (aturan bawaan mockup menyembunyikannya) */
+  .rail{display:flex;flex-direction:row;overflow-x:auto;padding:6px 8px;border-right:0;border-bottom:1px solid var(--line);gap:4px;white-space:nowrap}
+  .rail .grp{display:none}.rail a{flex:none}
+  .g3,.g4,.g2{grid-template-columns:minmax(0,1fr)}
+  .main{overflow:visible;min-width:0}.page{padding:var(--s4) var(--s3) var(--s6)}
+  .phead{flex-wrap:wrap}.phead .acts{margin-left:0}
+  .panel{overflow-x:auto}.t{min-width:560px}
+  /* tabel yang barisnya berisi tombol aksi: tumpuk jadi kartu agar aksi tak tergeser keluar layar */
+  .t.stack{min-width:0}.t.stack thead{display:none}
+  .t.stack,.t.stack tbody{display:block}
+  .t.stack tr{display:grid;grid-template-columns:30px minmax(0,1fr);gap:4px 10px;padding:10px 12px;border-bottom:1px solid var(--line)}
+  .t.stack td{display:block;padding:0;border:0;width:auto!important}
+  .t.stack td[colspan]{grid-column:1/-1;padding:8px 0!important}
+  .t.stack td:nth-child(2){grid-column:2}.t.stack td:nth-child(n+3){grid-column:2;text-align:left!important}
+  .kv{grid-template-columns:110px minmax(0,1fr)}
+}
 .role-choice{border-radius:4px;padding:4px 11px;font-size:13px;font-weight:600;color:var(--ink-3);cursor:pointer;display:inline-block}
 button.role-choice:focus-visible{outline:2px solid var(--pine);outline-offset:2px}

@@ -28,7 +28,8 @@ const order = (ref: string, over: Partial<Parameters<typeof ctx.ledger.ingestOrd
   source: "shopify", sourceRef: ref, currency: "USD", totalMinor: 2985, customerEmail: "sam@example.com", customerName: "Sam Reyes",
   lines: [{ sku: "HM-BP-0196", qty: 1, unitMinor: 2490 }], ...over,
 });
-const drain = async (at = new Date()) => { let t = { done: 0, retried: 0, dead: 0 }; for (let i = 0; i < 100; i++) { const r = await ctx.worker.tick(at, 200); t = { done: t.done + r.done, retried: t.retried + r.retried, dead: t.dead + r.dead }; if (!r.done && !r.retried && !r.dead) break; } return t; };
+// Jam VM Postgres bisa sedikit lebih maju dari jam proses tes (drift Colima), jadi 'sekarang' = beberapa detik ke depan.
+const drain = async (at = new Date(Date.now() + 5_000)) => { let t = { done: 0, retried: 0, dead: 0 }; for (let i = 0; i < 100; i++) { const r = await ctx.worker.tick(at, 200); t = { done: t.done + r.done, retried: t.retried + r.retried, dead: t.dead + r.dead }; if (!r.done && !r.retried && !r.dead) break; } return t; };
 const makeDue = () => ctx.db.update(outbox).set({ nextAttemptAt: new Date(0) }).where(sql`status = 'pending'`);
 
 describe("connecting Xero", () => {

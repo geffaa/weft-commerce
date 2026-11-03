@@ -113,3 +113,11 @@ a.chip{cursor:pointer}a.chip[aria-current=true]{background:var(--or);border-colo
 .asst-in{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--line)}
 .asst-in input{flex:1;height:40px;border:1px solid var(--line-2);border-radius:var(--r);padding:0 12px;font:inherit;min-width:0}
 .asst-in input:focus-visible{outline:2px solid var(--or);outline-offset:1px}
+
+/* Daftar koleksi di ponsel: foto kolom pertama harus tetap tampil (aturan mockup menyembunyikan kolom pertama untuk kotak centang). */
+@media(max-width:980px){td.img{display:block!important}.neutral{width:64px;height:52px}tr td.ad{display:block;grid-column:3;grid-row:1}}
+
+/* Sakelar mati: trek abu-abu dan tombol di kiri (mockup hanya menggambar keadaan hidup). */
+.swt.off .tr{background:var(--line-2)}.swt.off .tr::after{right:auto;left:3px}
+
+.logo svg{border-radius:8px}

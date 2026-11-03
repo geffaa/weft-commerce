@@ -5,15 +5,32 @@ import { eq } from "drizzle-orm";
 import { asRole, boot, env, PASSWORD, reset } from "./helpers";
 import { auditLog, exceptionItem, member, outbox } from "../src/db/schema";
 import { ConnectionService } from "../src/shopify/connection.service";
+import { RateLimiter } from "../src/assistant/rate-limiter";
 import type { ShopifyVariant } from "../src/shopify/shopify.client";
 
 let ctx: Awaited<ReturnType<typeof boot>>;
 const http = () => request(ctx.app.getHttpServer());
 beforeAll(async () => { ctx = await boot(); });
 afterAll(async () => { await ctx.app.close(); });
-beforeEach(async () => { await reset(ctx.db); });
+beforeEach(async () => { await reset(ctx.db); ctx.app.get(RateLimiter).reset(); });
 
 const login = (email: string, password: string) => http().post("/auth/login").send({ email, password });
+
+describe("login throttling", () => {
+  it("locks guessing for one account after 8 attempts, without locking other accounts", async () => {
+    await asRole(ctx, "ops"); await asRole(ctx, "finance");
+    for (let i = 0; i < 8; i++) expect((await login("ops@example.com", `wrong-password-${i}`).set("x-forwarded-for", `5.5.5.${i}`)).status).toBe(401);
+    const locked = await login("ops@example.com", PASSWORD).set("x-forwarded-for", "5.5.5.99"); // até a senha certa é recusada enquanto bloqueado
+    expect(locked.status).toBe(429);
+    expect((await login("finance@example.com", PASSWORD).set("x-forwarded-for", "5.5.5.50")).status).toBe(200);
+  });
+
+  it("limits guessing from one address across many accounts", async () => {
+    for (let i = 0; i < 20; i++) expect((await login(`nobody${i}@example.com`, "x-password-123").set("x-forwarded-for", "6.6.6.6")).status).toBe(401);
+    expect((await login("nobody99@example.com", "x-password-123").set("x-forwarded-for", "6.6.6.6")).status).toBe(429);
+    expect((await login("nobody99@example.com", "x-password-123").set("x-forwarded-for", "6.6.6.7")).status).toBe(401);
+  });
+});
 
 describe("login", () => {
   it("returns a token for the right password and stores only an Argon2id hash", async () => {

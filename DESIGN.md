@@ -51,3 +51,7 @@ Demo merchant: Halden Moto Parts (fictional, motorcycle parts), chosen because a
 
 ## Brand mark
 Two threads, one light and one white, interlacing once: systems woven together. Pine tile (#1B6B4A), light thread #A8DBC0, white thread over, with a small gap at the crossing. Wordmark: Albert Sans 700, tracking -0.035em. Files in `brand/`: `weft-mark.svg`, `weft-mark-dark.svg`, `weft-mark-mono.svg`, `weft-mark-512.png`, `weft-logo.png`, `weft-logo-dark.png`. Minimum size 16px. The merchant demo (Halden Moto) has its own placeholder "H" mark; merchant logos never use the Weft mark.
+
+## Halden Moto logo (storefront)
+
+The mark is the letter **H inside a sprocket** (12 teeth), white on petrol `#0E5A6B`, in a rounded square. It was chosen to read as "motorcycle parts" at a glance and to survive at 16 to 32 px, where the teeth become texture and the sprocket silhouette stays. Two earlier ideas were rejected: an H whose crossbar is a brake rotor (it merged into a blob at small sizes) and the same idea with a thin axle (it looked like a TIE fighter). Source: `brand/halden-mark.svg`; inverse for dark backgrounds: `brand/halden-mark-inverse.svg`; PNG lockups: `brand/halden-logo.png`, `brand/halden-logo-dark.png`. The storefront renders it inline from `apps/storefront/src/components/Logo.tsx`.

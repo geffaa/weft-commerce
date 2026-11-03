@@ -17,6 +17,12 @@ export class InventoryService {
     return row.qty;
   }
 
+  /** Apakah buku besar sudah punya satu pun peristiwa stok untuk SKU ini. */
+  async hasHistory(skuCode: string): Promise<boolean> {
+    const [r] = await this.db.select({ n: sql<number>`count(*)::int` }).from(inventoryEntry).where(eq(inventoryEntry.sku, skuCode));
+    return r.n > 0;
+  }
+
   /** Menambah baris stok; peristiwa yang sama (sourceEventId) tidak pernah dihitung dua kali. */
   async adjust(skuCode: string, delta: number, reason: string, sourceEventId: string, tx?: Tx): Promise<boolean> {
     const run = async (t: Tx) => {

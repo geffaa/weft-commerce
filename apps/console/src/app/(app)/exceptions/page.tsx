@@ -37,7 +37,7 @@ export default async function Exceptions({ searchParams }: { searchParams: Promi
         </div>
       </div>
       {rows.length === 0 ? <div className="panel"><div className="empty">Nothing needs attention.</div></div> : (
-        <div className="panel" style={{ overflow: "hidden" }}><table className="t"><tbody>
+        <div className="panel" style={{ overflow: "hidden" }}><table className="t stack"><tbody>
           {[...groups.entries()].map(([cls, items]) => (
             <GroupRows key={cls} cls={cls} items={items} canAct={canAct} />
           ))}

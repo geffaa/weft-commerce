@@ -30,3 +30,27 @@ jobs:
       - run: pnpm typecheck
       - run: pnpm lint
       - run: pnpm test
+
+  # E2E konsol: hub sungguhan + database sementara; tidak butuh rahasia apa pun.
+  # E2E storefront (Stripe uji, Medusa ter-seed) tidak dijalankan di sini karena butuh kunci Stripe uji sebagai secret.
+  console-e2e:
+    runs-on: ubuntu-latest
+    env:
+      E2E_PG_PORT: "5432"
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env: { POSTGRES_USER: weft, POSTGRES_PASSWORD: weft, POSTGRES_DB: postgres }
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U weft" --health-interval 3s --health-retries 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @weft/console e2e
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with: { name: console-e2e-traces, path: apps/console/test-results }

@@ -95,6 +95,16 @@ describe("connections API", () => {
 });
 
 describe("import", () => {
+  it("a SKU the ledger already knows keeps the Weft stock; Shopify's number is not added on top", async () => {
+    await ctx.inventory.adjust("HM-BP-0196", 35, "seed", "seed:known");
+    fakeVariants = [V({ variantId: "1", sku: "HM-BP-0196", available: 30 }), V({ variantId: "2", sku: "HM-OF-0112", available: 120 })];
+    const { body: c } = await create();
+    const r = await request(ctx.app.getHttpServer()).post(`/connections/${c.id}/import`).set(AUTH);
+    expect(r.body).toMatchObject({ mapped: 2, stockImported: 1 }); // só o SKU novo
+    expect(await ctx.inventory.stock("HM-BP-0196")).toBe(35);
+    expect(await ctx.inventory.stock("HM-OF-0112")).toBe(120);
+  });
+
   it("maps SKUs, records conflicts, imports opening stock once", async () => {
     fakeVariants = [
       V({ variantId: "1", sku: "HM-BP-0196", available: 20 }),
@@ -229,5 +239,48 @@ describe("ShopifyClient", () => {
     const out: ShopifyVariant[] = []; for await (const v of client.variants("loc")) out.push(v);
     expect(out.map((v) => v.sku)).toEqual(["A", null, "C"]);
     expect(afters).toEqual([null, "c1"]);
+  });
+});
+
+describe("ShopifyClient: demo data and webhook cleanup", () => {
+  const json = (body: unknown) => new Response(JSON.stringify(body));
+  const make = (handler: (body: any) => Response) => {
+    const seen: any[] = [];
+    const client = new ShopifyClient({ shop: "s.myshopify.com", clientId: "id", clientSecret: "sec" }, {
+      fetch: (async (url: string, init: RequestInit) => {
+        if (String(url).includes("oauth")) return json({ access_token: "t", expires_in: 86400 });
+        const b = JSON.parse(String(init.body)); seen.push(b); return handler(b);
+      }) as typeof fetch,
+    });
+    return { client, seen };
+  };
+
+  it("creates a product with SKU, price and opening stock at one location, and omits the SKU when there is none", async () => {
+    const { client, seen } = make(() => json({ data: { productSet: { product: { id: "gid://p/1" }, userErrors: [] } } }));
+    await client.createSimpleProduct({ title: "Pads", handle: "pads", sku: "HM-BP-0196", price: "31.60", quantity: 30, locationId: "gid://loc/1" });
+    await client.createSimpleProduct({ title: "Towel", handle: "towel", sku: null, price: "6.00", quantity: 60, locationId: "gid://loc/1" });
+    const v = seen[0].variables.input.variants[0];
+    expect(v).toMatchObject({ sku: "HM-BP-0196", price: "31.60", inventoryItem: { tracked: true }, inventoryQuantities: [{ locationId: "gid://loc/1", name: "available", quantity: 30 }] });
+    expect("sku" in seen[1].variables.input.variants[0]).toBe(false);
+    expect(seen[0].query).toContain("synchronous: true");
+  });
+
+  it("reports Shopify's validation errors, and looks products up by handle", async () => {
+    const bad = make(() => json({ data: { productSet: { product: null, userErrors: [{ message: "Access denied for productSet field" }] } } }));
+    await expect(bad.client.createSimpleProduct({ title: "x", handle: "x", sku: "A", price: "1", quantity: 1, locationId: "l" })).rejects.toMatchObject({ errorClass: "validation" });
+    const found = make(() => json({ data: { productByIdentifier: { id: "gid://p/9" } } }));
+    expect(await found.client.findProductByHandle("pads")).toEqual({ id: "gid://p/9" });
+    expect(await make(() => json({ data: { productByIdentifier: null } })).client.findProductByHandle("nope")).toBeNull();
+  });
+
+  it("removes only the webhooks that point at the given URL", async () => {
+    const { client, seen } = make((b) => b.query.includes("webhookSubscriptionDelete")
+      ? json({ data: { webhookSubscriptionDelete: { userErrors: [] } } })
+      : json({ data: { webhookSubscriptions: { nodes: [
+          { id: "gid://w/1", endpoint: { callbackUrl: "https://tunnel.example/webhooks/shopify" } },
+          { id: "gid://w/2", endpoint: { callbackUrl: "https://other.example/hook" } },
+          { id: "gid://w/3", endpoint: { callbackUrl: "https://tunnel.example/webhooks/shopify" } } ] } } }));
+    expect(await client.removeWebhooks("https://tunnel.example/webhooks/shopify")).toBe(2);
+    expect(seen.filter((s) => s.query.includes("Delete")).map((s) => s.variables.id)).toEqual(["gid://w/1", "gid://w/3"]);
   });
 });

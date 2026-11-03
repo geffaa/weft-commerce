@@ -128,4 +128,44 @@ export class ShopifyClient {
     if (errs.length) throw new ChannelError(errs.map((e) => e.message).join("; "), "validation");
     return "created";
   }
+
+  /** Cari produk menurut handle; dipakai agar pengisian data demo idempoten. */
+  async findProductByHandle(handle: string): Promise<{ id: string } | null> {
+    const d = await this.graphql<{ productByIdentifier: { id: string } | null }>(
+      `query($h: String!) { productByIdentifier(identifier: { handle: $h }) { id } }`, { h: handle });
+    return d.productByIdentifier;
+  }
+
+  /** Buat satu produk berisi satu varian, lengkap dengan SKU (boleh kosong), harga, dan stok awal di satu lokasi. */
+  async createSimpleProduct(p: { title: string; handle: string; sku: string | null; price: string; quantity: number; locationId: string }) {
+    const d = await this.graphql<{ productSet: { product: { id: string } | null; userErrors: { message: string; field?: string[] }[] } }>(
+      `mutation($input: ProductSetInput!) {
+         productSet(input: $input, synchronous: true) { product { id } userErrors { field message } } }`,
+      { input: {
+        title: p.title, handle: p.handle, status: "ACTIVE", vendor: "Halden Moto Parts",
+        productOptions: [{ name: "Title", values: [{ name: "Default Title" }] }],
+        variants: [{
+          optionValues: [{ optionName: "Title", name: "Default Title" }],
+          ...(p.sku ? { sku: p.sku } : {}), price: p.price,
+          inventoryItem: { tracked: true },
+          inventoryQuantities: [{ locationId: p.locationId, name: "available", quantity: p.quantity }],
+        }],
+      } });
+    const errs = d.productSet.userErrors;
+    if (errs.length) throw new ChannelError(errs.map((e) => e.message).join("; "), "validation");
+    return d.productSet.product!.id;
+  }
+
+  /** Hapus langganan webhook ke alamat tertentu (dipakai setelah tunnel sementara ditutup). */
+  async removeWebhooks(callbackUrl: string): Promise<number> {
+    const d = await this.graphql<{ webhookSubscriptions: { nodes: { id: string; endpoint: { callbackUrl?: string } }[] } }>(
+      `{ webhookSubscriptions(first: 100) { nodes { id endpoint { ... on WebhookHttpEndpoint { callbackUrl } } } } }`);
+    const mine = d.webhookSubscriptions.nodes.filter((n) => n.endpoint.callbackUrl === callbackUrl);
+    for (const n of mine) {
+      const r = await this.graphql<{ webhookSubscriptionDelete: { userErrors: { message: string }[] } }>(
+        `mutation($id: ID!) { webhookSubscriptionDelete(id: $id) { userErrors { message } } }`, { id: n.id });
+      if (r.webhookSubscriptionDelete.userErrors.length) throw new ChannelError(r.webhookSubscriptionDelete.userErrors[0].message, "validation");
+    }
+    return mine.length;
+  }
 }

@@ -2,12 +2,19 @@
   "name": "weft",
   "private": true,
   "packageManager": "pnpm@10.18.3",
-  "engines": { "node": ">=20" },
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "infra:up": "docker compose up -d --wait",
     "infra:down": "docker compose down",
     "lint": "pnpm -r --if-present lint",
     "test": "pnpm -r --if-present test",
-    "typecheck": "pnpm -r --if-present typecheck"
+    "typecheck": "pnpm -r --if-present typecheck",
+    "db:migrate:test": "DATABASE_URL_HUB=postgres://weft:weft@localhost:54330/hub_test pnpm --filter @weft/hub db:migrate",
+    "dev:medusa": "pnpm --filter @weft/medusa dev",
+    "dev:hub": "pnpm --filter @weft/hub start",
+    "dev:storefront": "pnpm --filter @weft/storefront dev",
+    "dev:console": "pnpm --filter @weft/console dev"
   }
 }

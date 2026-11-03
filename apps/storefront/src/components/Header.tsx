@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ShoppingBag } from "lucide-react";
+import { LogoMark } from "./Logo";
 import { GaragePicker, RegionPicker } from "./Pickers";
 import { COUNTRY_LABEL, getBikeModels, getCart, getGarage, getRegion } from "@/lib/state";
 import { listCategories } from "@/lib/catalog";
@@ -18,7 +19,7 @@ export default async function Header({ active }: { active?: string }) {
       <div className="util"><span>Free UK delivery over £60</span><span>Duties and VAT shown at checkout for EU and US</span><span>Trade accounts: net 30</span></div>
       <header className="h">
         <div className="hr">
-          <Link className="logo" href="/"><i style={{ font: "700 17px var(--nar)", color: "#fff" }}>H</i>Halden Moto</Link>
+          <Link className="logo" href="/"><LogoMark size={30} />Halden Moto</Link>
           <div style={{ flex: 1 }} />
           <GaragePicker models={models} label={garage?.label ?? null} />
           <div className="r">
