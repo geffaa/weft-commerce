@@ -1,7 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { eq, inArray, sql } from "drizzle-orm";
 import { DB, type Db } from "../db/db";
-import { exceptionItem, ledgerLine, ledgerOrder, sku } from "../db/schema";
+import { connection, exceptionItem, ledgerLine, ledgerOrder, outbox, sku } from "../db/schema";
 import { InventoryService } from "./inventory.service";
 
 export type OrderInput = {
@@ -10,6 +10,8 @@ export type OrderInput = {
   currency: string;
   totalMinor: number;
   paidAt?: Date;
+  customerEmail?: string | null;
+  customerName?: string | null;
   lines: { sku: string; qty: number; unitMinor: number }[];
 };
 export type IngestResult =
@@ -31,6 +33,7 @@ export class LedgerService {
       const ins = await tx.insert(ledgerOrder).values({
         source: input.source, sourceRef: input.sourceRef, currency: input.currency,
         totalMinor: input.totalMinor, paidAt: input.paidAt ?? new Date(), status: "accepted",
+        customerEmail: input.customerEmail ?? null, customerName: input.customerName ?? null,
       }).onConflictDoNothing().returning({ id: ledgerOrder.id });
       if (!ins.length) return { outcome: "duplicate" as const };
       const orderId = ins[0].id;
@@ -63,6 +66,11 @@ export class LedgerService {
 
       for (const s of skus) {
         await this.inventory.adjust(s, -need.get(s)!, `order:${input.source}`, `order:${input.source}:${input.sourceRef}:${s}`, tx);
+      }
+      // Outbox transaksional: order diterima dan tugas faktur ditulis atomik, tanpa jendela "tercatat tapi tak diantrekan".
+      const [xero] = await tx.select({ id: connection.id }).from(connection).where(eq(connection.kind, "xero"));
+      if (xero) {
+        await tx.insert(outbox).values({ topic: "xero.invoice", payload: { orderId }, idempotencyKey: `xero.invoice:${orderId}` }).onConflictDoNothing();
       }
       return { outcome: "accepted" as const, orderId };
     });

@@ -7,6 +7,8 @@ const schema = z.object({
   SHOPIFY_CLIENT_SECRET: z.string().optional(),
   MEDUSA_WEBHOOK_SECRET: z.string().min(1).default("dev-medusa-secret"),
   PORT: z.coerce.number().default(3100),
+  // Jam UTC (0-23) rekonsiliasi malam; kosong = tidak dijadwalkan (jalankan manual lewat API).
+  RECON_AT_UTC_HOUR: z.coerce.number().int().min(0).max(23).optional(),
   // Kunci AES-256 (64 hex) untuk rahasia koneksi. Default hanya untuk dev; wajib di produksi.
   HUB_ENCRYPTION_KEY: z.string().regex(/^[0-9a-f]{64}$/).default("0".repeat(63) + "1"),
   // Penandatangan JWT sesi konsol (HS256). Default hanya untuk dev.

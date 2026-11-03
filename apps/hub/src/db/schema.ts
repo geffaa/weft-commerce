@@ -30,6 +30,8 @@ export const ledgerOrder = hub.table("ledger_order", {
   paidAt: timestamp("paid_at", { withTimezone: true }),
   status: text("status").notNull(), // accepted | cannot_fulfil | cancelled
   xeroInvoiceId: text("xero_invoice_id"),
+  customerEmail: text("customer_email"),
+  customerName: text("customer_name"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 }, (t) => [uniqueIndex("ledger_order_source_ref").on(t.source, t.sourceRef)]);
 
@@ -101,6 +103,8 @@ export const connection = hub.table("connection", {
   scopes: text("scopes").array().notNull().default(sql`'{}'::text[]`),
   locationId: text("location_id"),
   locationName: text("location_name"),
+  // Pengaturan per koneksi, mis. Xero: { salesAccountCode, bankAccountCode }.
+  settings: jsonb("settings"),
   lastCheckedAt: timestamp("last_checked_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 }, (t) => [uniqueIndex("connection_kind_shop").on(t.kind, t.shop)]);
@@ -141,3 +145,13 @@ export const auditLog = hub.table("audit_log", {
   meta: jsonb("meta"),
   at: timestamp("at", { withTimezone: true }).notNull().defaultNow(),
 }, (t) => [index("audit_log_at_idx").on(t.at)]);
+
+/** Hasil satu rekonsiliasi: selisih terstruktur per SKU antara buku besar Weft dan kanal. */
+export const reconciliationReport = hub.table("reconciliation_report", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  kind: text("kind").notNull(), // stock | xero
+  runId: uuid("run_id").notNull(),
+  diffs: jsonb("diffs").notNull(),
+  summary: jsonb("summary").notNull(),
+  generatedAt: timestamp("generated_at", { withTimezone: true }).notNull().defaultNow(),
+});

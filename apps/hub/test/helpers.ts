@@ -31,7 +31,7 @@ export async function boot(extra: Partial<NodeJS.ProcessEnv> = {}) {
 }
 
 export async function reset(db: Db) {
-  await db.execute(sql`truncate hub.ledger_line, hub.ledger_order, hub.inventory_entry, hub.outbox, hub.webhook_receipt, hub.exception_item, hub.run, hub.sku, hub.sku_map, hub.connection, hub.member, hub.audit_log cascade`);
+  await db.execute(sql`truncate hub.ledger_line, hub.ledger_order, hub.inventory_entry, hub.outbox, hub.webhook_receipt, hub.exception_item, hub.run, hub.sku, hub.sku_map, hub.connection, hub.member, hub.audit_log, hub.reconciliation_report cascade`);
 }
 
 export const shopifySig = (raw: string) => createHmac("sha256", env.SHOPIFY_WEBHOOK_SECRET).update(raw).digest("base64");

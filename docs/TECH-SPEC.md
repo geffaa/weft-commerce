@@ -96,7 +96,7 @@ Webhook: verifikasi tanda tangan; idempotensi lewat `webhook_receipt(source, ext
 | Layanan | Untuk apa | Batasan / biaya | Sandbox demo |
 |---|---|---|---|
 | Shopify Admin GraphQL | impor, webhook, set stok | Laju berbasis biaya; angka berbeda antar sumber (1.000 poin @ 50/dtk vs 2.000 @ 100/dtk) — **verifikasi ke dokumen resmi**. Custom app per toko tidak perlu review | Toko dev gratis, gateway Bogus |
-| Xero | faktur + pembayaran | Tier harga baru sejak 2 Mar 2026; app tak tersertifikasi maks 25 organisasi; batas harian 1.000/org (Starter) — sumber tunggal, **verifikasi** | Demo company |
+| Xero | faktur + pembayaran | Tier harga baru sejak 2 Mar 2026; tier Starter gratis dibatasi **5 koneksi** (FAQ resmi Xero; angka lama "25 organisasi" keliru); Custom Connection (`client_credentials`, token 30 menit) gratis untuk Demo Company, berbayar sekitar USD 5/bulan per organisasi nyata (halaman harga, usia ±1 tahun, **verifikasi**); scope granular `accounting.invoices|payments|contacts|settings.read` sejak 2026 | Demo company |
 | Stripe | pembayaran toko | Tarif standar (sekitar 2,9% + 30¢ AS; **verifikasi**); 3DS lewat PaymentIntents | Mode uji |
 | Groq / Claude | LLM asisten | Groq GPT-OSS-120B sekitar $0,15 / $0,60 per juta token; Haiku 5.5 $0,10 / $0,50 (halaman harga, 2026-11-03) | Kunci uji milik developer |
 | (P2) WooCommerce REST | kanal kedua | Gratis | WP lokal |

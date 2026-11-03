@@ -17,7 +17,7 @@ export default async function orderPlacedToHub({ event: { data }, container }: S
   const query = container.resolve(ContainerRegistrationKeys.QUERY);
   const { data: orders } = await query.graph({
     entity: "order",
-    fields: ["id", "currency_code", "total", "items.quantity", "items.unit_price", "items.variant_sku"],
+    fields: ["id", "currency_code", "total", "email", "shipping_address.first_name", "shipping_address.last_name", "items.quantity", "items.unit_price", "items.variant_sku"],
     filters: { id: data.id },
   });
   const o = orders[0];
@@ -26,7 +26,8 @@ export default async function orderPlacedToHub({ event: { data }, container }: S
   const body = JSON.stringify({
     event: "order.paid",
     order: {
-      id: o.id, currency_code: o.currency_code, total: Number(o.total),
+      id: o.id, currency_code: o.currency_code, total: Number(o.total), email: o.email ?? null,
+      customer_name: [o.shipping_address?.first_name, o.shipping_address?.last_name].filter(Boolean).join(" ") || null,
       items: (o.items ?? []).filter((i) => i?.variant_sku).map((i) => ({
         sku: i!.variant_sku, quantity: Number(i!.quantity), unit_price: Number(i!.unit_price),
       })),

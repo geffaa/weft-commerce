@@ -29,6 +29,20 @@
       "when": 1793702068848,
       "tag": "0003_yummy_jamie_braddock",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1793705606293,
+      "tag": "0004_happy_zaladane",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1793708250970,
+      "tag": "0005_wet_invaders",
+      "breakpoints": true
     }
   ]
 }
