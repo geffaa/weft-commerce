@@ -1,0 +1,27 @@
+{
+  "name": "@weft/console",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 8200",
+    "build": "next build",
+    "start": "next start -p 8200",
+    "typecheck": "tsc --noEmit",
+    "e2e": "playwright test"
+  },
+  "dependencies": {
+    "lucide-react": "^0.468.0",
+    "next": "16.4.4",
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.56.1",
+    "@types/node": "^22.0.0",
+    "@types/pg": "^8.15.6",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "pg": "^8.23.1",
+    "typescript": "^5.6.0"
+  }
+}

@@ -26,8 +26,8 @@ Estimasi jujur untuk satu orang paruh waktu: **±21 hari kerja (3–4 minggu)**,
 - [x] Koneksi Xero (Custom Connection `client_credentials`, Demo Company); faktur + pembayaran idempoten
 - [x] Worker outbox: backoff, dead-letter, klasifikasi error (dikerjakan di M2)
 - [x] Rekonsiliasi malam (stok dan Xero) dengan laporan selisih dan "fix"
-- [ ] Konsol Next.js: Overview, Connections, Runs, Exceptions, Reconciliation, Products, Orders
-- [ ] Peran dan audit log di konsol (backend selesai di M2; sisa: UI)
+- [x] Konsol Next.js: Overview, Connections, Runs, Exceptions, Reconciliation, Products, Orders
+- [x] Peran dan audit log di konsol
 - **Fitur PRD:** F5, F6, F7, F8, F11
 - **Verifikasi:** replay 10.000 event → 0 faktur ganda; matikan worker di tengah → lanjut sekali; kegagalan Xero yang disengaja muncul di Exceptions dan sembuh setelah retry. **Terpenuhi 3 Nov 2026:** replay 10.000 event (2.000 order x 5) dan worker mati di tengah terbukti dengan tiruan; kegagalan Xero muncul di Exceptions dan sembuh setelah retry terbukti di Demo Company nyata (GBP ditolak -> aktifkan GBP -> retry -> INV-0038 PAID).
 
