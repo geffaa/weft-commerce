@@ -15,18 +15,29 @@ import { OverviewController } from "./ops/overview.controller";
 import { ConnectionService } from "./shopify/connection.service";
 import { ConnectionsController } from "./shopify/connections.controller";
 import { ImportService } from "./shopify/import.service";
+import { AssistantController } from "./assistant/assistant.controller";
+import { AssistantService } from "./assistant/assistant.service";
+import { EMBEDDER, LocalEmbedder, type Embedder } from "./assistant/embedder";
+import { KnowledgeService } from "./assistant/knowledge.service";
+import { GroqLlm, LLM, type Llm } from "./assistant/llm";
+import { EvalService } from "./assistant/eval.service";
+import { AssistantPipeline } from "./assistant/pipeline";
+import { RateLimiter } from "./assistant/rate-limiter";
+import { AssistantTools } from "./assistant/tools";
 import { XeroService } from "./xero/xero.service";
 import { ShopifyChannelClient } from "./shopify/shopify-channel.client";
 import { stockPushHandler } from "./channels/stock-push.handler";
 import { HANDLERS, OutboxWorker } from "./outbox/outbox.worker";
 import { WebhooksController } from "./webhooks/webhooks.controller";
 
-export function appModule(env: Env = loadEnv()) {
+export type Overrides = { embedder?: Embedder; llm?: Llm };
+
+export function appModule(env: Env = loadEnv(), overrides: Overrides = {}) {
   const { db, pool } = createDb(env.DATABASE_URL_HUB);
   // Tutup pool saat aplikasi berhenti; tanpa ini tiap app.close() meninggalkan koneksi menggantung.
   class PoolCloser implements OnModuleDestroy { async onModuleDestroy() { await pool.end(); } }
   @Module({
-    controllers: [WebhooksController, ConnectionsController, AuthController, OpsController, OverviewController, ReconciliationController],
+    controllers: [WebhooksController, ConnectionsController, AuthController, OpsController, OverviewController, ReconciliationController, AssistantController],
     providers: [
       { provide: ENV, useValue: env },
       { provide: DB, useValue: db },
@@ -38,6 +49,14 @@ export function appModule(env: Env = loadEnv()) {
       ConnectionService,
       ReconciliationService,
       XeroService,
+      { provide: EMBEDDER, useValue: overrides.embedder ?? new LocalEmbedder() },
+      { provide: LLM, useValue: overrides.llm ?? new GroqLlm({ apiKey: env.GROQ_API_KEY, model: env.GROQ_MODEL, fastModel: env.GROQ_FAST_MODEL }) },
+      RateLimiter,
+      KnowledgeService,
+      AssistantTools,
+      AssistantPipeline,
+      AssistantService,
+      EvalService,
       ImportService,
       ShopifyChannelClient,
       { provide: CHANNEL, useExisting: ShopifyChannelClient },
@@ -51,7 +70,7 @@ export function appModule(env: Env = loadEnv()) {
       },
       OutboxWorker,
     ],
-    exports: [DB, InventoryService, LedgerService, OutboxWorker, CHANNEL, HANDLERS, ConnectionService, ImportService, AuthService, ReconciliationService, XeroService],
+    exports: [DB, InventoryService, LedgerService, OutboxWorker, CHANNEL, HANDLERS, ConnectionService, ImportService, AuthService, ReconciliationService, XeroService, KnowledgeService, AssistantService, AssistantPipeline, RateLimiter, EvalService],
   })
   class AppModule {}
   return AppModule;

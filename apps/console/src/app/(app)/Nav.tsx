@@ -1,11 +1,11 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Activity, AlertTriangle, ArrowLeftRight, Building2, LayoutDashboard, Package, Settings, ShoppingCart, type LucideIcon } from "lucide-react";
+import { Activity, AlertTriangle, ArrowLeftRight, BookOpen, Building2, FlaskConical, LayoutDashboard, MessageSquare, Package, Settings, ShoppingCart, type LucideIcon } from "lucide-react";
 
 const ICONS: Record<string, LucideIcon> = {
   "/": LayoutDashboard, "/orders": ShoppingCart, "/products": Package, "/runs": Activity,
-  "/exceptions": AlertTriangle, "/reconciliation": ArrowLeftRight, "/connections": Building2, "/settings": Settings,
+  "/exceptions": AlertTriangle, "/conversations": MessageSquare, "/knowledge": BookOpen, "/evals": FlaskConical, "/reconciliation": ArrowLeftRight, "/connections": Building2, "/settings": Settings,
 };
 type Link_ = { href: string; label: string; n?: number; hot?: boolean };
 

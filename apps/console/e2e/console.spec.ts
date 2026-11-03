@@ -30,7 +30,9 @@ test("wrong password shows a message and stays on login", async ({ page }) => {
 
 test("navigation follows the role: support sees only Overview, finance cannot connect or administer", async ({ page }) => {
   await signIn(page, "support");
-  await expect(nav(page).getByRole("link")).toHaveCount(1);
+  await expect(nav(page).getByRole("link")).toHaveCount(2); // Overview dan Conversations
+  await expect(nav(page).getByRole("link", { name: "Conversations" })).toBeVisible();
+  await expect(nav(page).getByRole("link", { name: "Evals" })).toHaveCount(0);
   await page.goto("/exceptions"); // hub menjawab 403 untuk peran ini
   await expect(page).toHaveURL(/\/\?denied=1/);
   await expect(alert(page, "Your role cannot open that page")).toBeVisible();
@@ -107,10 +109,10 @@ test("products, orders and runs list what the hub holds", async ({ page }) => {
 test("owner manages roles: a role change is applied and written to the audit log", async ({ page }) => {
   await signIn(page, "owner");
   await nav(page).getByRole("link", { name: "Settings" }).click();
-  const row = page.locator("tr", { hasText: "support@example.com" });
+  const row = page.locator("tr", { hasText: "rolechange@example.com" });
   await row.getByRole("button", { name: "finance" }).click();
   await expect(page.getByRole("status")).toContainText("Role updated");
-  await expect(page.locator("tr", { hasText: "support@example.com" }).getByRole("button", { name: "finance" })).toBeDisabled(); // papan peran saat ini
+  await expect(page.locator("tr", { hasText: "rolechange@example.com" }).getByRole("button", { name: "finance" })).toBeDisabled(); // papan peran saat ini
   await expect(page.getByText("member.role")).toBeVisible();
 
   // pemilik terakhir tidak bisa diturunkan: galat hub tampil apa adanya
@@ -124,4 +126,47 @@ test("the environment is always visible and read-only", async ({ page }) => {
   await expect(env).toBeVisible();
   await expect(env.getByRole("button", { name: "Sandbox" })).toHaveAttribute("aria-pressed", "true");
   await expect(env.getByRole("button", { name: "Live" })).toHaveAttribute("aria-pressed", "false");
+});
+
+test("support reviews conversations: status, transcript with sources and tool calls, mark wrong, take over", async ({ page }) => {
+  await signIn(page, "support");
+  await nav(page).getByRole("link", { name: "Conversations" }).click();
+  await expect(page.getByText("Answered by AI")).toBeVisible();
+  await expect(page.getByText("Handed over")).toBeVisible();
+  await page.getByRole("link", { name: "How long do I have to return a part?" }).click();
+  await expect(page.getByText("Sources: Returns and refunds")).toBeVisible();
+  await expect(page.getByText(/get_price_stock\(sku: HM-BP-0196/)).toBeVisible();
+  await expect(page.getByText("Hi, I'm an AI assistant for Halden Moto Parts.")).toBeVisible(); // pengungkapan AI ada di transkrip
+
+  await page.getByText("Mark wrong").first().click();
+  await page.getByRole("radio", { name: "needs_tool" }).click();
+  await page.getByRole("button", { name: "Add as evaluation case" }).click();
+  await expect(page.getByRole("status").filter({ hasText: "evaluation case" })).toBeVisible();
+  await expect(page.getByText("Flagged wrong")).toBeVisible();
+
+  await page.getByRole("button", { name: "Take over" }).click();
+  await expect(page.getByRole("status").filter({ hasText: "took over" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Take over" })).toHaveCount(0);
+});
+
+test("finance cannot read conversations", async ({ page }) => {
+  await signIn(page, "finance");
+  await page.goto("/conversations");
+  await expect(page).toHaveURL(/denied=1/);
+});
+
+test("owner sees knowledge and the evaluation scoreboard, with the unbacked-figure count in red", async ({ page }) => {
+  await signIn(page, "owner");
+  await nav(page).getByRole("link", { name: "Knowledge" }).click();
+  await expect(page.getByText("Returns and refunds")).toBeVisible();
+  await expect(page.getByText("catalog:HM-BP-0196")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Reindex now" })).toBeVisible();
+
+  await nav(page).getByRole("link", { name: "Evals" }).click();
+  await expect(page.getByText("59 / 60")).toBeVisible();
+  await expect(page.getByText("Below target")).toBeVisible(); // 98% mas 1 número sem ferramenta
+  await expect(page.getByText("Figures without a tool")).toBeVisible();
+  await expect(page.getByRole("cell", { name: /needs_tool/ }).first()).toBeVisible();
+  await expect(page.getByText("How much are the sintered front brake pads?")).toBeVisible(); // caso que falhou
+  await expect(page.getByText("tool get_price_stock was not called; 1 price/stock figure(s) without a tool result")).toBeVisible();
 });

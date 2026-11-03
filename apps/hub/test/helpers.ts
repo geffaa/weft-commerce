@@ -3,7 +3,7 @@ import { createHmac } from "node:crypto";
 import { NestFactory } from "@nestjs/core";
 import type { INestApplication } from "@nestjs/common";
 import { sql } from "drizzle-orm";
-import { appModule } from "../src/app.module";
+import { appModule, type Overrides } from "../src/app.module";
 import { DB, type Db } from "../src/db/db";
 import { loadEnv } from "../src/common/env";
 import { InventoryService } from "../src/ledger/inventory.service";
@@ -20,9 +20,10 @@ const envSrc = {
 };
 export const env = loadEnv(envSrc as NodeJS.ProcessEnv);
 
-export async function boot(extra: Partial<NodeJS.ProcessEnv> = {}) {
+export async function boot(extra: Partial<NodeJS.ProcessEnv> = {}, overrides: Overrides = {}) {
   const e = Object.keys(extra).length ? loadEnv({ ...envSrc, ...extra } as NodeJS.ProcessEnv) : env;
-  const app: INestApplication = await NestFactory.create(appModule(e), { rawBody: true, logger: false });
+  const app: INestApplication = await NestFactory.create(appModule(e, overrides), { rawBody: true, logger: false });
+  app.getHttpAdapter().getInstance().set("trust proxy", true); // tes memakai X-Forwarded-For untuk meniru banyak pengunjung
   await app.init();
   return {
     app, db: app.get<Db>(DB), inventory: app.get(InventoryService), ledger: app.get(LedgerService),
@@ -31,7 +32,7 @@ export async function boot(extra: Partial<NodeJS.ProcessEnv> = {}) {
 }
 
 export async function reset(db: Db) {
-  await db.execute(sql`truncate hub.ledger_line, hub.ledger_order, hub.inventory_entry, hub.outbox, hub.webhook_receipt, hub.exception_item, hub.run, hub.sku, hub.sku_map, hub.connection, hub.member, hub.audit_log, hub.reconciliation_report cascade`);
+  await db.execute(sql`truncate hub.ledger_line, hub.ledger_order, hub.inventory_entry, hub.outbox, hub.webhook_receipt, hub.exception_item, hub.run, hub.sku, hub.sku_map, hub.connection, hub.member, hub.audit_log, hub.reconciliation_report, hub.chunk, hub.doc, hub.message, hub.conversation, hub.eval_result, hub.eval_run, hub.eval_case cascade`);
 }
 
 export const shopifySig = (raw: string) => createHmac("sha256", env.SHOPIFY_WEBHOOK_SECRET).update(raw).digest("base64");

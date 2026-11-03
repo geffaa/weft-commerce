@@ -52,3 +52,10 @@ export const setRole = async (id: string, role: string) => act("/settings", "Rol
 export async function createMember(f: FormData) {
   return act("/settings", "Member created.", () => hub("/members", { method: "POST", body: { email: text(f, "email"), password: String(f.get("password") ?? ""), role: text(f, "role") } }));
 }
+
+export const takeoverConversation = async (id: string) => act(`/conversations/${id}`, "You took over. The assistant will stop replying.", () => hub(`/assistant/conversations/${id}/takeover`, { method: "POST" }));
+export async function flagMessage(conversationId: string, messageId: string, f: FormData) {
+  return act(`/conversations/${conversationId}`, "Marked wrong. It is now an evaluation case.", () => hub(`/assistant/messages/${messageId}/flag`, { method: "POST", body: { category: text(f, "category"), facts: text(f, "facts").split(",").map((x) => x.trim()).filter(Boolean) } }));
+}
+export const reindexKnowledge = async () => act("/knowledge", "Knowledge reindexed.", () => hub("/knowledge/reindex", { method: "POST" }));
+export const runEvals = async () => act("/evals", "Evaluation started. Results appear as it runs.", () => hub("/evals/run", { method: "POST" }));

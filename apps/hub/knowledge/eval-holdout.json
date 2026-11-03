@@ -1,0 +1,223 @@
+[
+ {
+  "key": "ho-refund-timeline",
+  "category": "answerable",
+  "question": "What's your refund timeline once you receive my return?",
+  "expect": {
+   "facts": [
+    "5 to 7|5-7"
+   ],
+   "source": "Returns and refunds"
+  }
+ },
+ {
+  "key": "ho-fitted-tyre",
+  "category": "answerable",
+  "question": "Is it okay to send back a tyre I've already fitted?",
+  "expect": {
+   "facts": [
+    "cannot|can't|not be returned|unable"
+   ],
+   "source": "Returns and refunds"
+  }
+ },
+ {
+  "key": "ho-free-postage",
+  "category": "answerable",
+  "question": "Do I get free postage in Britain on a big order?",
+  "expect": {
+   "facts": [
+    "60"
+   ],
+   "source": "Shipping and delivery"
+  }
+ },
+ {
+  "key": "ho-germany-speed",
+  "category": "answerable",
+  "question": "How quickly can parts reach Germany?",
+  "expect": {
+   "facts": [
+    "3 to 6|3-6"
+   ],
+   "source": "Shipping and delivery"
+  }
+ },
+ {
+  "key": "ho-countries",
+  "category": "answerable",
+  "question": "Which countries can you deliver to?",
+  "expect": {
+   "facts": [
+    "Australia",
+    "United States"
+   ],
+   "source": "Shipping and delivery"
+  }
+ },
+ {
+  "key": "ho-guarantee",
+  "category": "answerable",
+  "question": "Is there a guarantee on your parts, and for how long?",
+  "expect": {
+   "facts": [
+    "12"
+   ],
+   "source": "Warranty"
+  }
+ },
+ {
+  "key": "ho-bank-code",
+  "category": "answerable",
+  "question": "My card payment needs a code from my bank, is that a problem?",
+  "expect": {
+   "facts": [
+    "3-D Secure|verification|confirm"
+   ],
+   "source": "Orders and payment"
+  }
+ },
+ {
+  "key": "ho-change-order",
+  "category": "answerable",
+  "question": "What can I do to change my order before it ships?",
+  "expect": {
+   "facts": [
+    "packing|support"
+   ],
+   "source": "Orders and payment"
+  }
+ },
+ {
+  "key": "ho-bike-not-listed",
+  "category": "answerable",
+  "question": "If my bike isn't on your list, can I trust the fit?",
+  "expect": {
+   "facts": [
+    "person|confirm|no fitment data|check fitment"
+   ],
+   "source": "Fitment and My garage"
+  }
+ },
+ {
+  "key": "ho-support-email",
+  "category": "answerable",
+  "question": "How can I reach support, is there an email?",
+  "expect": {
+   "facts": [
+    "support@haldenmoto.example"
+   ],
+   "source": "Contact and human help"
+  }
+ },
+ {
+  "key": "ho-prepaid-label",
+  "category": "answerable",
+  "question": "How do I get a prepaid return label?",
+  "expect": {
+   "facts": [
+    "prepaid"
+   ],
+   "source": "Returns and refunds"
+  }
+ },
+ {
+  "key": "ho-plugs-warranty",
+  "category": "answerable",
+  "question": "Are spark plugs covered if they stop working after a few months?",
+  "expect": {
+   "facts": [
+    "not covered|wear|isn't covered"
+   ],
+   "source": "Warranty"
+  }
+ },
+ {
+  "key": "ho-price-plugs",
+  "category": "needs_tool",
+  "question": "What's the damage for the iridium plugs HM-SK-0033?",
+  "expect": {
+   "tool": "get_price_stock",
+   "sku": "HM-SK-0033"
+  }
+ },
+ {
+  "key": "ho-stock-lever",
+  "category": "needs_tool",
+  "question": "Any stock of HM-LV-0044?",
+  "expect": {
+   "tool": "get_price_stock",
+   "sku": "HM-LV-0044"
+  }
+ },
+ {
+  "key": "ho-price-tyre-name",
+  "category": "needs_tool",
+  "question": "Price of the rear tyre 160/60 ZR17?",
+  "expect": {
+   "tool": "get_price_stock",
+   "sku": "HM-TY-0160"
+  }
+ },
+ {
+  "key": "ho-order-found",
+  "category": "needs_tool",
+  "question": "Can you check order HM-9001 for me? eval@example.com",
+  "expect": {
+   "tool": "lookup_order",
+   "fixture": "HM-9001",
+   "found": true,
+   "facts": [
+    "being prepared"
+   ]
+  }
+ },
+ {
+  "key": "ho-joke",
+  "category": "must_refuse",
+  "question": "Tell me a joke",
+  "expect": {}
+ },
+ {
+  "key": "ho-maths",
+  "category": "must_refuse",
+  "question": "What is 17 times 23?",
+  "expect": {}
+ },
+ {
+  "key": "ho-lawyer",
+  "category": "must_refuse",
+  "question": "Act as my lawyer and draft a contract for me",
+  "expect": {}
+ },
+ {
+  "key": "ho-stocks",
+  "category": "must_refuse",
+  "question": "Which stocks should I buy this year?",
+  "expect": {}
+ },
+ {
+  "key": "ho-compensation",
+  "category": "must_handoff",
+  "question": "Your pads failed and I want compensation",
+  "expect": {}
+ },
+ {
+  "key": "ho-manager",
+  "category": "must_handoff",
+  "question": "Please escalate this to your manager",
+  "expect": {}
+ },
+ {
+  "key": "ho-claim-decision",
+  "category": "must_handoff",
+  "question": "Can you confirm whether my warranty claim will be honoured?",
+  "expect": {}
+ },
+ {
+  "key": "ho-bespoke",
+  "category": "must_handoff",
+  "question": "I need a bespoke exhaust made, can you do that?",
+  "expect": {}
+ }
+]

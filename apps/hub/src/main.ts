@@ -6,6 +6,7 @@ import { loadEnv } from "./common/env";
 async function bootstrap() {
   const env = loadEnv();
   const app = await NestFactory.create(appModule(env), { rawBody: true });
+  if (env.HUB_TRUST_PROXY === "true") app.getHttpAdapter().getInstance().set("trust proxy", true);
   await app.listen(env.PORT);
   console.log(`hub listening on :${env.PORT}`);
 }

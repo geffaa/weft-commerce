@@ -16,6 +16,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       { group: "Commerce", links: [{ href: "/orders", label: "Orders" }, { href: "/products", label: "Products", n: ov.unmappedSkus || undefined }] },
       { group: "Operations", links: [{ href: "/runs", label: "Runs" }, { href: "/exceptions", label: "Exceptions", n: ov.openExceptions || undefined, hot: true }, { href: "/reconciliation", label: "Reconciliation", n: recon || undefined }] },
     ] : []),
+    ...(can(me.role, "support", "ops") ? [{ group: "Assistant", links: [{ href: "/conversations", label: "Conversations" }, ...(me.role === "owner" ? [{ href: "/knowledge", label: "Knowledge" }, { href: "/evals", label: "Evals" }] : [])] }] : []),
     ...(can(me.role, "ops") ? [{ group: "Channels", links: [{ href: "/connections", label: "Connections" }] }] : []),
     ...(me.role === "owner" ? [{ group: "Admin", links: [{ href: "/settings", label: "Settings" }] }] : []),
   ];

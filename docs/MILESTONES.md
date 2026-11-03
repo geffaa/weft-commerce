@@ -32,12 +32,12 @@ Estimasi jujur untuk satu orang paruh waktu: **±21 hari kerja (3–4 minggu)**,
 - **Verifikasi:** replay 10.000 event → 0 faktur ganda; matikan worker di tengah → lanjut sekali; kegagalan Xero yang disengaja muncul di Exceptions dan sembuh setelah retry. **Terpenuhi 3 Nov 2026:** replay 10.000 event (2.000 order x 5) dan worker mati di tengah terbukti dengan tiruan; kegagalan Xero muncul di Exceptions dan sembuh setelah retry terbukti di Demo Company nyata (GBP ditolak -> aktifkan GBP -> retry -> INV-0038 PAID).
 
 ## M4 — Asisten RAG dan evaluasi (±4 hari)
-- [ ] Ingest dokumen kebijakan dan katalog ke pgvector; embedding dan chunking
-- [ ] Alat `lookup_order` dan `get_price_stock`; pencocokan angka-ke-alat; pengungkapan AI; serah-terima
-- [ ] Widget di storefront; rate limit
-- [ ] 60 kasus evaluasi dan penilai; halaman Evals dan Conversations
+- [x] Ingest dokumen kebijakan dan katalog ke pgvector; embedding dan chunking (bge-small-en-v1.5 lokal, 384 dim)
+- [x] Alat `lookup_order` dan `get_price_stock`; pencocokan angka-ke-alat; pengungkapan AI; serah-terima
+- [x] Widget di storefront; rate limit
+- [x] 60 kasus evaluasi dan penilai; halaman Evals dan Conversations
 - **Fitur PRD:** F9, F10
-- **Verifikasi:** skor ≥ 85% dan 0 jawaban harga/stok tanpa alat; serangan injeksi pada dokumen tidak mengubah perilaku alat.
+- **Verifikasi:** skor ≥ 85% dan 0 jawaban harga/stok tanpa alat; serangan injeksi pada dokumen tidak mengubah perilaku alat. **Terpenuhi 3 Nov 2026 dengan model nyata (Groq gpt-oss-120b):** run pertama 51/60 (85,0%), setelah menyetel prompt/ambang 59/60 (98,3%), set penahan 23/24 (95,8%); 0 angka tanpa alat di semua run; injeksi via dokumen: 0 pemanggilan alat. Lihat catatan kejujuran di BREAKDOWN.
 
 ## M5 — Poles, bukti, rilis (±3 hari)
 - [ ] Audit screenshot semua layar di 1440 dan 390 px; perbaikan

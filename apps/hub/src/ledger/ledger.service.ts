@@ -12,6 +12,7 @@ export type OrderInput = {
   paidAt?: Date;
   customerEmail?: string | null;
   customerName?: string | null;
+  orderNumber?: string | null;
   lines: { sku: string; qty: number; unitMinor: number }[];
 };
 export type IngestResult =
@@ -33,7 +34,7 @@ export class LedgerService {
       const ins = await tx.insert(ledgerOrder).values({
         source: input.source, sourceRef: input.sourceRef, currency: input.currency,
         totalMinor: input.totalMinor, paidAt: input.paidAt ?? new Date(), status: "accepted",
-        customerEmail: input.customerEmail ?? null, customerName: input.customerName ?? null,
+        customerEmail: input.customerEmail ?? null, customerName: input.customerName ?? null, orderNumber: input.orderNumber ?? null,
       }).onConflictDoNothing().returning({ id: ledgerOrder.id });
       if (!ins.length) return { outcome: "duplicate" as const };
       const orderId = ins[0].id;
